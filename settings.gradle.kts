@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "GestionMovil"
+rootProject.name = "DAM_Ev_Proyecto_GestionMovil"
 include(":app")
