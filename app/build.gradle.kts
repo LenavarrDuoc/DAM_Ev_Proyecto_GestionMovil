@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -37,6 +38,9 @@ android {
 }
 
 dependencies {
+    val room_version = "3.0.3"
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
@@ -52,4 +56,11 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    // Para resolver 'viewModel()'
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    // Para resolver los íconos de visibilidad (Visibility y VisibilityOff)
+    // implementation(libs.androidx.room3.runtime)
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation(libs.androidx.navigation.compose)
+
 }
