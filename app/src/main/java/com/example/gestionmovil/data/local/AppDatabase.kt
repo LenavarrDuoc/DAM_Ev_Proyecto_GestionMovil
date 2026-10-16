@@ -33,7 +33,7 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "agencia_database"
+                    "db-gestionmovil"
                 ).fallbackToDestructiveMigration()
                  .build()
                 INSTANCE = instance
