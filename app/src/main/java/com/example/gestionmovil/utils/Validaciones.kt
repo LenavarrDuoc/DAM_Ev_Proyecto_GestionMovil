@@ -13,7 +13,7 @@ object Validaciones{
         return nombre.trim().length >= 2
     }
 
-    fun validarContrasena(password: String): String? {
+    fun validarPassword(password: String): String? {
         if (password.length < 8) {
             return "La contraseña debe tener al menos 8 caracteres"
         }
@@ -42,6 +42,10 @@ object Validaciones{
         }
         if (!esCorreoValido(email)) {
             return "El correo electrónico no tiene un formato válido"
+        }
+
+        if (validarPassword(password) != null){
+            return validarPassword(password)
         }
 
         // Nota: En el Login no es necesario evaluar reglas complejas (mayúsculas, caracteres especiales),
@@ -77,7 +81,7 @@ object Validaciones{
         }
 
         // 4. Validar complejidad de la contraseña
-        val errorPassword = validarContrasena(password)
+        val errorPassword = validarPassword(password)
         if (errorPassword != null) {
             return errorPassword
         }
