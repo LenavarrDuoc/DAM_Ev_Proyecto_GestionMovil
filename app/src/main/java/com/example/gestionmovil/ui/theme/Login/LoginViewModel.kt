@@ -58,11 +58,22 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         isPasswordVisible = !isPasswordVisible
     }
 
+    //Para limpieza de campos en caso de error o login exitoso.
     fun limpiarCampos() {
         email = ""
         password = ""
         errorCorreo = false
         errorPassword = false
+    }
+
+    //Para limpieza total cuando se recarga la pantalla al inicio o al volver a ella.
+    fun limpiarEstadoCompleto() {
+        email = ""
+        password = ""
+        errorCorreo = false
+        errorPassword = false
+        errorMessage = null
+        isLoading = false
     }
 
     fun onLoginClick(onSuccess: (Usuario) -> Unit) {
@@ -91,7 +102,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
             isLoading = false
             resultado.onSuccess { usuario ->
-                limpiarCampos()
+                limpiarEstadoCompleto()
                 onSuccess(usuario)
             }.onFailure { error ->
                 limpiarCampos()

@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.gestionmovil.ui.theme.Login.LoginScreen
+import com.example.gestionmovil.ui.theme.Registro.RegistroScreen
 
 @Composable
 fun AppNavegacion(
@@ -29,7 +30,16 @@ fun AppNavegacion(
         }
 
         composable(Rutas.Registro.ruta) {
-            // Pendiente: RegisterScreen()
+            RegistroScreen(
+                onRegisterSuccess = {
+                    // Tras un registro exitoso, elimina Registro de la pila y vuelve a Login
+                    navController.popBackStack()
+                },
+                onNavigateToLogin = {
+                    // Acción al presionar volver/atrás desde Registro
+                    navController.popBackStack()
+                }
+            )
         }
 
         composable(Rutas.Home.ruta) {
