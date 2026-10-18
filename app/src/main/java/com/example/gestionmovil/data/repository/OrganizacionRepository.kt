@@ -48,21 +48,21 @@ class OrganizacionRepository(
     /**
      * Obtiene los contactos ficticios asociados a una organización específica.
      */
-    fun getContactsByOrganization(orgId: Long): Flow<List<ContactoEntity>> {
+    fun getContactsByOrganizacion(orgId: Long): Flow<List<ContactoEntity>> {
         return organizacionDao.getContactosByOrganizacion(orgId)
     }
 
     /**
      * Registra un nuevo contacto ficticio asociado a una organización.
      */
-    suspend fun insertContact(contacto: ContactoEntity) {
+    suspend fun insertContacto(contacto: ContactoEntity) {
         organizacionDao.insertContacto(contacto)
     }
 
     /**
      * Actualiza la información de un contacto ficticio.
      */
-    suspend fun updateContact(contacto: ContactoEntity) {
+    suspend fun updateContacto(contacto: ContactoEntity) {
         organizacionDao.updateContacto(contacto)
     }
 }

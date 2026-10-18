@@ -51,14 +51,14 @@ class OportunidadFormViewModel(
     private fun validarFormulario() {
         val s = _uiState.value
         val isValid = s.nombreError == null && s.nombre.isNotBlank() &&
-                s.descripcionError == null && s.descripcion.isNotBlank() &&
-                s.fuenteInformacionError == null && s.fuenteInformacion.isNotBlank() &&
-                s.responsableInternoError == null && s.responsableInterno.isNotBlank()
+                      s.descripcionError == null && s.descripcion.isNotBlank() &&
+                      s.fuenteInformacionError == null && s.fuenteInformacion.isNotBlank() &&
+                      s.responsableInternoError == null && s.responsableInterno.isNotBlank()
 
         _uiState.update { it.copy(isFormValid = isValid) }
     }
 
-    fun saveOpportunity(currentDate: String) {
+    fun saveOportunidad(currentDate: String) {
         if (!_uiState.value.isFormValid) return
 
         viewModelScope.launch {

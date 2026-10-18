@@ -22,6 +22,7 @@ data class ContactoEntity(
     val nombre: String,
     val organizacionId: Long,
     val cargo: String,
+    val area: String,
     val correo: String,
     val telefono: String,
     val medioPreferente: String,

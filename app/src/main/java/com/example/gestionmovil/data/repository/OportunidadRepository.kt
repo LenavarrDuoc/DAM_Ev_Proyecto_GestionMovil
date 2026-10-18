@@ -33,14 +33,14 @@ class OportunidadRepository(
     /**
      * Actualiza los datos completos de una oportunidad existente.
      */
-    suspend fun updateOpportunity(oportunidad: OportunidadEntity) {
+    suspend fun updateOportunidad(oportunidad: OportunidadEntity) {
         oportunidadDao.updateOportunidad(oportunidad)
     }
 
     /**
      * Actualiza únicamente el estado de la gestión y la fecha de última modificación.
      */
-    suspend fun updateOpportunityStatus(id: Long, estado: String, fecha: String) {
+    suspend fun updateEstadoOportunidad(id: Long, estado: String, fecha: String) {
         oportunidadDao.updateEstado(id, estado, fecha)
     }
 }

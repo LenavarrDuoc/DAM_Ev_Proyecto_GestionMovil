@@ -17,7 +17,7 @@ interface OrganizacionDao {
     @Update
     suspend fun updateOrganizacion(organizacion: OrganizacionEntity)
 
-    @Query("SELECT * FROM organizaciones ORDER BY name ASC")
+    @Query("SELECT * FROM organizaciones ORDER BY nombre ASC")
     fun getAllOrganizaciones(): Flow<List<OrganizacionEntity>>
 
     @Query("SELECT * FROM organizaciones WHERE id = :orgId")

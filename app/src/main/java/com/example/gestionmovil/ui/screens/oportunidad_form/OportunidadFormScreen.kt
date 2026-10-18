@@ -162,7 +162,7 @@ fun OportunidadFormScreen(
 
             // Botón de guardado reactivo
             Button(
-                onClick = { viewModel.saveOpportunity(currentDate = "2026-10-16") },
+                onClick = { viewModel.saveOportunidad(currentDate = "2026-10-16") },
                 enabled = uiState.isFormValid,
                 modifier = Modifier
                     .fillMaxWidth()
