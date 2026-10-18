@@ -3,40 +3,39 @@ package com.example.gestionmovil
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.lifecycle.lifecycleScope
-import com.example.gestionmovil.data.local.AppDatabase
-import com.example.gestionmovil.data.local.entities.OportunidadEntity
-import com.example.gestionmovil.data.repository.OportunidadRepository
-import com.example.gestionmovil.data.repository.OrganizacionRepository
-import com.example.gestionmovil.ui.screens.contacto_form.ContactoFormScreen
-import com.example.gestionmovil.ui.screens.contacto_form.ContactoFormViewModel
-import com.example.gestionmovil.ui.screens.oportunidad_detail.OportunidadDetailScreen
-import com.example.gestionmovil.ui.screens.oportunidad_detail.OportunidadDetailViewModel
-import kotlinx.coroutines.launch
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.gestionmovil.navigation.AppNavegacion
+import com.example.gestionmovil.ui.theme.GestionMovilTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val database = AppDatabase.getDatabase(applicationContext)
-        val oportunidadRepository = OportunidadRepository(database.oportunidadDao())
-
-        // 2. Instanciar ViewModel
-        val oportunidadDetailViewModel = OportunidadDetailViewModel(oportunidadRepository)
-
+        enableEdgeToEdge()
         setContent {
-            MaterialTheme {
-                Surface {
-                    // 3. Probar la pantalla de formulario
-                    OportunidadDetailScreen(
-                        oportunidadId = 1,
-                        viewModel = oportunidadDetailViewModel,
-                        onNavigateBack = { /* Accion al volver */ }
-                    )
+            GestionMovilTheme {
+                Surface( modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                 )  {
+                    AppNavegacion()
                 }
             }
         }
     }
+}
+
+@Composable
+fun Greeting(name: String, modifier: Modifier = Modifier) {
+    Text(
+        text = "Hello $name!",
+        modifier = modifier
+    )
 }
