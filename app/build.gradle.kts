@@ -39,6 +39,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.room.common)
     val room_version = "3.0.3"
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)

@@ -7,6 +7,9 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,21 +23,22 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gestionmovil.models.Usuario
 
-
 @Composable
 fun LoginScreen(
     onLoginSuccess: (Usuario) -> Unit,
     onNavigateToRegister: () -> Unit = {},
     viewModel: LoginViewModel = viewModel()
 ) {
+    // Recolectamos el StateFlow reactivamente de la UI
+    val uiState by viewModel.uiState.collectAsState()
+
+    // Se ejecuta al cargar la pantalla o al regresar desde otra vista
+    LaunchedEffect(Unit) {
+        viewModel.limpiarEstadoCompleto()
+    }
+
     LoginContent(
-        email = viewModel.email,
-        password = viewModel.password,
-        isPasswordVisible = viewModel.isPasswordVisible,
-        errorMessage = viewModel.errorMessage,
-        errorCorreo = viewModel.errorCorreo,
-        errorPassword = viewModel.errorPassword,
-        isLoading = viewModel.isLoading,
+        uiState = uiState,
         onEmailChange = viewModel::onEmailChange,
         onPasswordChange = viewModel::onPasswordChange,
         onTogglePasswordVisibility = viewModel::togglePasswordVisibility,
@@ -45,20 +49,13 @@ fun LoginScreen(
 
 @Composable
 fun LoginContent(
-    email: String,
-    password: String,
-    isPasswordVisible: Boolean,
-    errorMessage: String?,
-    errorCorreo : Boolean,
-    errorPassword : Boolean,
-    isLoading: Boolean,
+    uiState: LoginUiState,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onTogglePasswordVisibility: () -> Unit,
     onLoginClick: () -> Unit,
     onNavigateToRegister: () -> Unit
 ) {
-    //Variables para focusRequest de elementos en caso de estar vacíos al validar.
     val emailFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
 
@@ -88,13 +85,12 @@ fun LoginContent(
 
             // Campo Correo Electrónico
             OutlinedTextField(
-                value = email,
-                onValueChange = { onEmailChange(it) },
+                value = uiState.email,
+                onValueChange = onEmailChange,
                 label = { Text("Correo electrónico") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                isError = errorCorreo,
-                /*supportingText = { if (errorMessage != null) { Text(errorMessage) } },*/
+                isError = uiState.errorCorreo,
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(emailFocusRequester)
@@ -104,27 +100,26 @@ fun LoginContent(
 
             // Campo Contraseña
             OutlinedTextField(
-                value = password,
-                onValueChange = { onPasswordChange(it) },
+                value = uiState.password,
+                onValueChange = onPasswordChange,
                 label = { Text("Contraseña") },
                 singleLine = true,
-                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                visualTransformation = if (uiState.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 trailingIcon = {
-                    val icon = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                    IconButton(onClick = { onTogglePasswordVisibility() }) {
+                    val icon = if (uiState.isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                    IconButton(onClick = onTogglePasswordVisibility) {
                         Icon(imageVector = icon, contentDescription = "Mostrar contraseña")
                     }
                 },
-                isError = errorPassword,
-                /*supportingText = { if (errorMessage != null) { Text(errorMessage) } },*/
+                isError = uiState.errorPassword,
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(passwordFocusRequester)
             )
 
-            // Feedback de Error (reemplaza a ls supporting texts de cada campo.)
-            errorMessage?.let { msg ->
+            // Feedback de Error
+            uiState.errorMessage?.let { msg ->
                 Text(
                     text = msg,
                     color = MaterialTheme.colorScheme.error,
@@ -140,19 +135,18 @@ fun LoginContent(
             // Botón de Iniciar Sesión / Carga
             Button(
                 onClick = {
-                    // 3. Evaluar cuál está vacío y solicitar el foco
                     when {
-                        errorCorreo -> emailFocusRequester.requestFocus()
-                        errorPassword -> passwordFocusRequester.requestFocus()
+                        uiState.errorCorreo -> emailFocusRequester.requestFocus()
+                        uiState.errorPassword -> passwordFocusRequester.requestFocus()
                     }
                     onLoginClick()
                 },
-                enabled = !isLoading,
+                enabled = !uiState.isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
             ) {
-                if (isLoading) {
+                if (uiState.isLoading) {
                     CircularProgressIndicator(
                         color = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(24.dp)
@@ -174,15 +168,12 @@ fun LoginContent(
 @Preview(showBackground = true)
 @Composable
 fun LoginSreenPreview() {
-    MaterialTheme{
+    MaterialTheme {
         LoginContent(
-            email = "usuario@correo.com",
-            password = "123",
-            isPasswordVisible = false,
-            errorMessage = null,
-            errorCorreo = false,
-            errorPassword = false,
-            isLoading = false,
+            uiState = LoginUiState(
+                email = "usuario@correo.com",
+                password = "123"
+            ),
             onEmailChange = {},
             onPasswordChange = {},
             onTogglePasswordVisibility = {},

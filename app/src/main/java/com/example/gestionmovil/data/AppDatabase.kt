@@ -2,12 +2,13 @@ package com.example.gestionmovil.data
 
 import com.example.gestionmovil.models.Usuario
 import android.content.Context
+import androidx.room.TypeConverters
 import androidx.room3.Database
 import androidx.room3.Room
 import androidx.room3.RoomDatabase
 
 //*** INICIO Usuarios:
-@Database(entities = [Usuario::class], version = 1, exportSchema = false)
+@Database(entities = [Usuario::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun usuarioDao(): UsuarioDao
@@ -22,7 +23,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "gestion_movil_db"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration() // Elimina y recrea la base de datos si cambia el esquema durante desarrollo
+                    .build()
                 INSTANCE = instance
                 instance
             }

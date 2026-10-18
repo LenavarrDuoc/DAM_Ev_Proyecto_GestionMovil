@@ -1,10 +1,7 @@
 package com.example.gestionmovil.ui.theme.Login
 
 import android.app.Application
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.example.gestionmovil.data.AppDatabase
 import com.example.gestionmovil.data.UsuarioRepository
@@ -12,6 +9,10 @@ import com.example.gestionmovil.models.Usuario
 import com.example.gestionmovil.utils.Validaciones
 import com.example.gestionmovil.utils.Validaciones.esCorreoValido
 import com.example.gestionmovil.utils.Validaciones.validarPassword
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
@@ -23,85 +24,83 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         repository = UsuarioRepository(dao)
     }
 
-    var email by mutableStateOf("")
-        private set
+    // Estado reactivo centralizado con StateFlow
+    private val _uiState = MutableStateFlow(LoginUiState())
+    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-    var password by mutableStateOf("")
-        private set
-
-    var isPasswordVisible by mutableStateOf(false)
-        private set
-
-    var isLoading by mutableStateOf(false)
-        private set
-
-    //Variables de error:
-    var errorCorreo by mutableStateOf(false)
-
-    var errorPassword by mutableStateOf(false)
-
-    var errorMessage by mutableStateOf<String?>(null)
-        private set
+    // ─── HANDLERS DE CAMBIOS ──────────────────────────────────────
 
     fun onEmailChange(nuevoEmail: String) {
-        email = nuevoEmail
-        errorMessage = null
+        _uiState.update {
+            it.copy(email = nuevoEmail, errorCorreo = false, errorMessage = null)
+        }
     }
 
     fun onPasswordChange(nuevaPassword: String) {
-        password = nuevaPassword
-        errorMessage = null
+        _uiState.update {
+            it.copy(password = nuevaPassword, errorPassword = false, errorMessage = null)
+        }
     }
 
-    //Botón de visibilidad de contraseña:
     fun togglePasswordVisibility() {
-        isPasswordVisible = !isPasswordVisible
+        _uiState.update {
+            it.copy(isPasswordVisible = !it.isPasswordVisible)
+        }
     }
 
+    // Limpia campos pero conserva el estado base
     fun limpiarCampos() {
-        email = ""
-        password = ""
-        errorCorreo = false
-        errorPassword = false
+        _uiState.update {
+            it.copy(email = "", password = "", errorCorreo = false, errorPassword = false)
+        }
     }
+
+    // Reinicio total al recargar o regresar a la pantalla
+    fun limpiarEstadoCompleto() {
+        _uiState.value = LoginUiState()
+    }
+
+    // ─── AUTENTICACIÓN DE USUARIO ─────────────────────────────────
 
     fun onLoginClick(onSuccess: (Usuario) -> Unit) {
-        // 1. Validar campos con Validaciones.kt
+        val estado = _uiState.value
 
-        errorCorreo = !esCorreoValido(email)
+        // 1. Validar campos
+        val errCorreo = !esCorreoValido(estado.email)
+        val errPass = validarPassword(estado.password) != null
+        val errorFormulario = Validaciones.validarLogin(estado.email, estado.password)
 
-        if (validarPassword(password) != null){
-            errorPassword = true
-        } else {
-            errorPassword = false
+        _uiState.update {
+            it.copy(
+                errorCorreo = errCorreo,
+                errorPassword = errPass,
+                errorMessage = errorFormulario
+            )
         }
 
-        val errorFormulario = Validaciones.validarLogin(email, password)
-        if (errorFormulario != null) {
-            errorMessage = errorFormulario
-            return
-        }
+        if (errorFormulario != null) return
 
-        // 2. Consultar la BD local
+        // 2. Consultar la BD local (Room)
         viewModelScope.launch {
-            isLoading = true
-            errorMessage = null
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            val resultado = repository.loginUsuario(email, password)
+            val resultado = repository.loginUsuario(estado.email, estado.password)
 
-            isLoading = false
             resultado.onSuccess { usuario ->
-                limpiarCampos()
+                limpiarEstadoCompleto()
                 onSuccess(usuario)
             }.onFailure { error ->
-                limpiarCampos()
-                errorMessage = error.message ?: "Error al iniciar sesión"
+                val msg = error.message ?: "Error al iniciar sesión"
+                val esErrorCorreo = msg.contains("correo", ignoreCase = true)
 
-                //En caso de error de credenciales en alguno de los campos:
-                if (errorMessage?.contains("correo", ignoreCase = true) == true) {
-                    errorCorreo = true
-                } else {
-                    errorPassword = true
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        password = "", // Se limpia solo la contraseña para facilitar corregir
+                        errorMessage = msg,
+                        errorCorreo = esErrorCorreo,
+                        errorPassword = !esErrorCorreo
+                    )
                 }
             }
         }
