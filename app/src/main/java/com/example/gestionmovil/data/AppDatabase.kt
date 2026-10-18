@@ -6,13 +6,18 @@ import androidx.room.TypeConverters
 import androidx.room3.Database
 import androidx.room3.Room
 import androidx.room3.RoomDatabase
+import com.example.gestionmovil.data.local.dao.SeguimientoDao
 
 //*** INICIO Usuarios:
-@Database(entities = [Usuario::class], version = 2, exportSchema = false)
+@Database(entities = [OrganizacionEntity::class,
+    ContactoEntity::class,
+    OportunidadEntity::class,
+    SeguimientoEntity::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun usuarioDao(): UsuarioDao
 
+    abstract fun seguimientoDao(): SeguimientoDao
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
