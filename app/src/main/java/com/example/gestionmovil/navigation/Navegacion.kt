@@ -2,6 +2,8 @@ package com.example.gestionmovil.navigation
 
 import android.app.Application
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -11,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.gestionmovil.data.local.AppDatabase
+import com.example.gestionmovil.data.local.entities.UsuarioEntity
 import com.example.gestionmovil.data.repository.SeguimientoRepository
 import com.example.gestionmovil.ui.seguimiento.SeguimientoScreen
 import com.example.gestionmovil.ui.seguimiento.SeguimientoViewModel
@@ -21,12 +24,17 @@ import com.example.gestionmovil.ui.screens.contacto_form.ContactoFormViewModel
 import com.example.gestionmovil.ui.screens.oportunidad_form.OportunidadFormScreen
 import com.example.gestionmovil.ui.screens.oportunidad_form.OportunidadFormViewModel
 import com.example.gestionmovil.ui.theme.Registro.RegistroScreen
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
 fun AppNavegacion(
     navController: NavHostController = rememberNavController()
 ) {
     val context = LocalContext.current
+
+    // Estado que conserva la sesión del usuario en el grafo de navegación
+    var usuarioActual by remember { mutableStateOf<UsuarioEntity?>(null) }
 
     NavHost(
         navController = navController,
@@ -58,10 +66,26 @@ fun AppNavegacion(
             )
         }
 
+// --- PANTALLA PRINCIPAL ADAPTADA SEGÚN EL ROL ---
         composable(Rutas.Home.ruta) {
-            // Pendiente: HomeScreen()
+/*            usuarioActual?.let { usuario ->
+                HomeScreen(
+                    usuario = usuario,
+                    onNavigateToNuevaOportunidad = {
+                        navController.navigate(Rutas.OportunidadForm.ruta)
+                    },
+                    onNavigateToNuevoContacto = {
+                        navController.navigate(Rutas.ContactoForm.ruta)
+                    },
+                    onLogout = {
+                        usuarioActual = null
+                        navController.navigate(Rutas.Login.ruta) {
+                            popUpTo(Rutas.Home.ruta) { inclusive = true }
+                        }
+                    }
+                )
+            }*/
         }
-
         // --- MÓDULO SEGUIMIENTO ---
         composable(
             route = Rutas.Seguimiento.ruta,
