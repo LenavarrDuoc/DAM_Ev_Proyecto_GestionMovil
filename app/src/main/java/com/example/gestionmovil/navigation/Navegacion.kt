@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -14,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.gestionmovil.data.local.AppDatabase
 import com.example.gestionmovil.data.repository.OportunidadRepository
+import com.example.gestionmovil.data.local.entities.UsuarioEntity
 import com.example.gestionmovil.data.repository.SeguimientoRepository
 import com.example.gestionmovil.ui.screens.InicioScreen
 import com.example.gestionmovil.ui.seguimiento.SeguimientoScreen
@@ -32,12 +35,17 @@ import com.example.gestionmovil.ui.screens.oportunidad_list.OportunidadListScree
 import com.example.gestionmovil.ui.screens.oportunidad_list.OportunidadListViewModel
 import com.example.gestionmovil.ui.screens.oportunidad_list.OportunidadListViewModelFactory
 import com.example.gestionmovil.ui.theme.Registro.RegistroScreen
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
 fun AppNavegacion(
-    navController: NavHostController = rememberNavController(),
+    navController: NavHostController = rememberNavController()
 ) {
     val context = LocalContext.current
+
+    // Estado que conserva la sesión del usuario en el grafo de navegación
+    var usuarioActual by remember { mutableStateOf<UsuarioEntity?>(null) }
 
     NavHost(
         navController = navController,
@@ -69,6 +77,7 @@ fun AppNavegacion(
             )
         }
 
+// --- PANTALLA PRINCIPAL ADAPTADA SEGÚN EL ROL ---
         composable(Rutas.Home.ruta) {
             InicioScreen(navController = navController)
         }
