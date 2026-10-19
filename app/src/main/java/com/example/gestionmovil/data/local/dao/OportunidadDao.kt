@@ -30,4 +30,6 @@ interface OportunidadDao {
     @Query("UPDATE oportunidades SET estado = :nuevoEstado, fechaUltimaActualizacion = :fechaActualizacion WHERE id = :estId")
     suspend fun updateEstado(estId: Long, nuevoEstado: String, fechaActualizacion: String)
 
+    @Query("SELECT COUNT(*) FROM oportunidades")
+    fun getCantidadOportunidades(): Flow<Int>
 }

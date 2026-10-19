@@ -1,14 +1,44 @@
 package com.example.gestionmovil.ui.seguimiento
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,7 +50,8 @@ import com.example.gestionmovil.data.local.entities.SeguimientoEntity
 fun SeguimientoScreen(
     viewModel: SeguimientoViewModel,
     oportunidadId: Long,
-    onVolver: () -> Unit
+    onVolver: () -> Unit,
+    onNavigateToHome: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var mostrarBottomSheet by remember { mutableStateOf(false) }
@@ -35,7 +66,25 @@ fun SeguimientoScreen(
                 title = { Text("Seguimiento Comercial") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                ),
+                navigationIcon = {
+                    // BOTÓN ATRÁS
+                    IconButton(onClick = onVolver) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
+                },
+                actions = {
+                    // BOTÓN HOME
+                    IconButton(onClick = onNavigateToHome) {
+                        Icon(
+                            imageVector = Icons.Default.Home,
+                            contentDescription = "Ir a Inicio"
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -170,8 +219,6 @@ fun FormularioSeguimientoContent(
     viewModel: SeguimientoViewModel,
     onGuardar: () -> Unit
 ) {
-    val tipos = listOf("Llamada", "Correo", "Reunión", "Propuesta", "Visita")
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -229,6 +276,36 @@ fun FormularioSeguimientoContent(
 
 // --- PREVIEWS PARA ANDROID STUDIO ---
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, name = "Barra Superior (TopAppBar)")
+@Composable
+fun SeguimientoTopBarPreview() {
+    MaterialTheme {
+        TopAppBar(
+            title = { Text("Seguimiento Comercial") },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            ),
+            navigationIcon = {
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Volver"
+                    )
+                }
+            },
+            actions = {
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.Default.Home,
+                        contentDescription = "Ir a Inicio"
+                    )
+                }
+            }
+        )
+    }
+}
+
 @Preview(showBackground = true, name = "Tarjeta de Seguimiento")
 @Composable
 fun ItemSeguimientoCardPreview() {
@@ -241,8 +318,8 @@ fun ItemSeguimientoCardPreview() {
                     tipoGestion = "Llamada de Calificación",
                     fechaGestion = "2026-10-19",
                     propuesta = "Implementación del módulo CRM Móvil",
-                    respuestaCliente = "Interesados en la propuesta, solicitaron ajustar presupuesto.",
-                    proximaAccion = "Enviar cotización actualizada",
+                    respuestaCliente = "Interesados en la propuesta, solicitaron ajustar alcance.",
+                    proximaAccion = "Enviar propuesta revisada",
                     fechaProximaAccion = "2026-10-25"
                 ),
                 onEditar = {},
