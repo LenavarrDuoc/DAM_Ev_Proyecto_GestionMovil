@@ -1,6 +1,7 @@
 package com.example.gestionmovil.data.repository
 
 import com.example.gestionmovil.data.local.dao.OportunidadDao
+import com.example.gestionmovil.data.local.entities.OportunidadConOrganizacion
 import com.example.gestionmovil.data.local.entities.OportunidadEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -20,6 +21,14 @@ class OportunidadRepository(
      */
     suspend fun getOportunidadById(id: Long): OportunidadEntity? {
         return oportunidadDao.getOportunidadById(id)
+    }
+
+    /**
+     * Consulta relacional que une Oportunidad con Organizacion (JOIN)
+     * para obtener el nombre de la organización asociada directamente desde Room.
+     */
+    fun getOportunidadesConOrganizacion(): Flow<List<OportunidadConOrganizacion>> {
+        return oportunidadDao.getOportunidadesConOrganizacion()
     }
 
     /**

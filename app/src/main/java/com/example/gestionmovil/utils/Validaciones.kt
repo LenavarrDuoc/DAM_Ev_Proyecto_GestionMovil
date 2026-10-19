@@ -95,6 +95,11 @@ object Validaciones{
         return null // Todo correcto
     }
     //***FIN validaciones Login y Registro:
+
+
+    // *** INICIO validaciones formularios Oportunidad/Contacto
+
+    // Validar campo vacío.
     fun validarNotEmpty(value: String, nombreCampo: String): String? {
         return if (value.isBlank()) "El campo $nombreCampo no puede estar vacío" else null
     }
@@ -109,4 +114,6 @@ object Validaciones{
         if (telefono.isBlank()) return "El teléfono es obligatorio"
         return if (telefono.length < 8) "El teléfono debe tener al menos 8 dígitos" else null
     }
+
+    // *** FIN validaciones formularios Oportunidad/Contacto
 }
