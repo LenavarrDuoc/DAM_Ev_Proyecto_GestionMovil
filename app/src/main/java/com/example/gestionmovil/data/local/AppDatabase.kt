@@ -20,6 +20,8 @@ import com.example.gestionmovil.data.local.entities.UsuarioEntity
 
 // Imports para la precarga de datos y corrutinas:
 import androidx.sqlite.SQLiteConnection
+import com.example.gestionmovil.data.local.dao.EventoDao
+import com.example.gestionmovil.data.local.entities.EventoEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,9 +33,10 @@ import com.example.gestionmovil.data.local.entities.RolUsuarioEntity
         ContactoEntity::class,
         OportunidadEntity::class,
         SeguimientoEntity::class,
-        UsuarioEntity::class
+        UsuarioEntity::class,
+        EventoEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -42,6 +45,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun seguimientoDao(): SeguimientoDao
     abstract fun oportunidadDao(): OportunidadDao
     abstract fun organizacionDao(): OrganizacionDao
+    abstract fun eventoDao(): EventoDao
 
     companion object {
         @Volatile

@@ -19,7 +19,11 @@ sealed class Rutas(val ruta: String) {
     object OportunidadForm : Rutas("oportunidad_form")
     // Formulario para Registrar Contacto
     object ContactoForm : Rutas("contacto_form")
-    object Eventos : Rutas("eventos")
+    object CalendarioEventos : Rutas("calendario_eventos")
+    object CrearEvento : Rutas("crear_evento")
+    object DetalleEvento : Rutas("detalle_evento/{eventoId}") {
+        fun crearRuta(eventoId: String) = "detalle_evento/$eventoId"
+    }
     object Alertas : Rutas("alertas")
     object Historial : Rutas("historial")
 }

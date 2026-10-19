@@ -36,6 +36,12 @@ import com.example.gestionmovil.ui.screens.oportunidad_list.OportunidadListViewM
 import com.example.gestionmovil.ui.theme.Registro.RegistroScreen
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.gestionmovil.data.repository.EventoRepository
+import com.example.gestionmovil.ui.screens.evento_detail.EventoDetailScreen
+import com.example.gestionmovil.ui.screens.evento_form.EventoFormScreen
+import com.example.gestionmovil.ui.screens.evento_form.EventoFormViewModel
+import com.example.gestionmovil.ui.screens.evento_form.EventoFormViewModelFactory
+import com.example.gestionmovil.ui.screens.evento_list.EventoListScreen
 import com.example.gestionmovil.ui.screens.login.LoginViewModel
 
 @Composable
@@ -46,6 +52,16 @@ fun AppNavegacion(
 
     // Estado que conserva la sesión del usuario en el grafo de navegación
     var usuarioActual by remember { mutableStateOf<UsuarioEntity?>(null) }
+
+    val database = AppDatabase.getDatabase(context.applicationContext)
+
+    // 2. Creamos el Repositorio de Eventos pasándole el DAO
+    val eventoRepository = EventoRepository(database.eventoDao())
+
+    // 3. Instanciamos el ViewModel usando la Factory inyectada
+    val eventosViewModel: EventoFormViewModel = viewModel(
+        factory = EventoFormViewModelFactory(eventoRepository)
+    )
 
     NavHost(
         navController = navController,
@@ -201,9 +217,44 @@ fun AppNavegacion(
             PlaceholderScreen(titulo = "Alertas y Notificaciones", navController = navController)
         }
 
-        composable(Rutas.Eventos.ruta) {
-            // Reemplaza por tu pantalla real de Eventos o Calendario
-            PlaceholderScreen(titulo = "Calendario y Eventos", navController = navController)
+        composable(Rutas.CalendarioEventos.ruta) {
+            EventoListScreen(
+                viewModel = eventosViewModel,
+                onNavigateToCrear = {
+                    navController.navigate(Rutas.CrearEvento.ruta)
+                },
+                onNavigateToDetalle = { eventoId ->
+                    navController.navigate(Rutas.DetalleEvento.crearRuta(eventoId))
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // 2. CREACIÓN DE EVENTO (Formulario)
+        composable(Rutas.CrearEvento.ruta) {
+            EventoFormScreen(
+                viewModel = eventosViewModel,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // 3. DETALLE DEL EVENTO (Argumento: eventoId)
+        composable(
+            route = Rutas.DetalleEvento.ruta,
+            arguments = listOf(navArgument("eventoId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val eventoId = backStackEntry.arguments?.getString("eventoId") ?: ""
+            EventoDetailScreen(
+                eventoId = eventoId,
+                viewModel = eventosViewModel,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         composable(Rutas.Historial.ruta) {
