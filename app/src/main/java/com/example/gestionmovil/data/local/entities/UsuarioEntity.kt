@@ -17,11 +17,5 @@ data class UsuarioEntity (
     val sApellido: String? = null,
     val fecNac: Long = 0L, //Como Long para no tener problemas con guardado en BD con SQLite.
     val email: String = "",
-    val password: String = "",
-    val rol: String = RolUsuarioEntity.CLIENTE.name
-){
-    fun esAdmin(): Boolean = rol.equals(RolUsuarioEntity.ADMIN.name, ignoreCase = true)
-    fun esSupervisor(): Boolean = rol.equals(RolUsuarioEntity.SUPERVISOR.name, ignoreCase = true)
-    fun esEjecutivo(): Boolean = rol.equals(RolUsuarioEntity.EJECUTIVO.name, ignoreCase = true)
-    fun esCliente(): Boolean = rol.equals(RolUsuarioEntity.CLIENTE.name, ignoreCase = true)
-}
+    val password: String = ""
+)

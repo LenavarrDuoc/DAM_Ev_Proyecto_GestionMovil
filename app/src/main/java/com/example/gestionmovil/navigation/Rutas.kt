@@ -8,6 +8,9 @@ sealed class Rutas(val ruta: String) {
     object Seguimiento : Rutas("seguimiento/{oportunidadId}") {
         fun crearRuta(oportunidadId: Long): String = "seguimiento/$oportunidadId"
     }
+
+    object OportunidadList : Rutas("oportunidad_list")
+
     // Detalle de Oportunidad (recibe ID de la oportunidad)
     object OportunidadDetail : Rutas("oportunidad_detail/{oportunidadId}") {
         fun crearRuta(oportunidadId: Long): String = "oportunidad_detail/$oportunidadId"
@@ -16,4 +19,7 @@ sealed class Rutas(val ruta: String) {
     object OportunidadForm : Rutas("oportunidad_form")
     // Formulario para Registrar Contacto
     object ContactoForm : Rutas("contacto_form")
+    object Eventos : Rutas("eventos")
+    object Alertas : Rutas("alertas")
+    object Historial : Rutas("historial")
 }
