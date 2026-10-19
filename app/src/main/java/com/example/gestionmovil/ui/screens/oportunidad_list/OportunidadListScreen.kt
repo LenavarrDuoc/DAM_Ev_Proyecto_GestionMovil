@@ -20,9 +20,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -43,9 +45,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.gestionmovil.data.local.entities.OportunidadConOrganizacion
+import com.example.gestionmovil.data.local.entities.OportunidadEntity
+import com.example.gestionmovil.data.local.entities.OrganizacionEntity
 import com.example.gestionmovil.navigation.Rutas
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,11 +65,32 @@ fun OportunidadListScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Listado de Oportunidades") },
+                navigationIcon = {
+                    // BOTÓN ATRÁS -> Regresa al menú / pantalla anterior
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
+                },
                 actions = {
+                    // BOTÓN FILTRAR
                     IconButton(onClick = { viewModel.toggleFilterVisibility() }) {
                         Icon(
                             imageVector = Icons.Default.FilterList,
                             contentDescription = "Filtrar por estado"
+                        )
+                    }
+                    // BOTÓN HOME -> Navega directo a InicioScreen
+                    IconButton(onClick = {
+                        navController.navigate(Rutas.Home.ruta) {
+                            popUpTo(Rutas.Home.ruta) { inclusive = true }
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Home,
+                            contentDescription = "Ir a Inicio"
                         )
                     }
                 }
@@ -124,7 +150,6 @@ fun OportunidadListScreen(
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.padding(bottom = 6.dp)
                     )
-                    // Agregamos horizontalScroll(rememberScrollState())
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier
@@ -254,6 +279,103 @@ fun OportunidadCard(
                     onClick = { },
                     label = { Text("Prioridad: ${item.oportunidad.prioridad}") }
                 )
+            }
+        }
+    }
+}
+
+// --- PREVIEWS PARA ANDROID STUDIO ---
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, name = "Barra Superior (TopAppBar)")
+@Composable
+fun OportunidadListTopBarPreview() {
+    MaterialTheme {
+        TopAppBar(
+            title = { Text("Listado de Oportunidades") },
+            navigationIcon = {
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Volver"
+                    )
+                }
+            },
+            actions = {
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.Default.FilterList,
+                        contentDescription = "Filtrar por estado"
+                    )
+                }
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.Default.Home,
+                        contentDescription = "Ir a Inicio"
+                    )
+                }
+            }
+        )
+    }
+}
+
+// --- PREVIEWS PARA ANDROID STUDIO ---
+
+
+@Preview(showBackground = true, name = "Tarjeta Oportunidad")
+@Composable
+fun OportunidadCardItemPreview() {
+    MaterialTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            Card(
+                onClick = {},
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Licitación Red de Fibra Óptica",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = "Medio",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = "Organización: Gobierno Regional",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        SuggestionChip(
+                            onClick = { },
+                            label = { Text("Propuesta enviada") }
+                        )
+                        SuggestionChip(
+                            onClick = { },
+                            label = { Text("Prioridad: Alta") }
+                        )
+                    }
+                }
             }
         }
     }

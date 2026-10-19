@@ -52,4 +52,8 @@ class OportunidadRepository(
     suspend fun updateEstadoOportunidad(id: Long, estado: String, fecha: String) {
         oportunidadDao.updateEstado(id, estado, fecha)
     }
+
+    fun getCantidadOportunidades(): Flow<Int> {
+        return oportunidadDao.getCantidadOportunidades() // o como se llame el parámetro del DAO en tu constructor
+    }
 }
