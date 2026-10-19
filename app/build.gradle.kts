@@ -38,6 +38,7 @@ android {
 }
 
 dependencies {
+    implementation("io.coil-kt:coil-compose:2.7.0")
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.room.common)
     val room_version = "3.0.3"

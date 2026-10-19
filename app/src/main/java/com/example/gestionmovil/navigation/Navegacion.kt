@@ -1,15 +1,28 @@
 package com.example.gestionmovil.navigation
 
 import android.app.Application
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -20,6 +33,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.gestionmovil.data.local.AppDatabase
 import com.example.gestionmovil.data.local.entities.UsuarioEntity
+import com.example.gestionmovil.data.repository.ContactoRepository
 import com.example.gestionmovil.data.repository.EventoRepository
 import com.example.gestionmovil.data.repository.OportunidadRepository
 import com.example.gestionmovil.data.repository.SeguimientoRepository
@@ -28,6 +42,7 @@ import com.example.gestionmovil.ui.screens.InicioViewModel
 import com.example.gestionmovil.ui.screens.InicioViewModelFactory
 import com.example.gestionmovil.ui.screens.contacto_form.ContactoFormScreen
 import com.example.gestionmovil.ui.screens.contacto_form.ContactoFormViewModel
+import com.example.gestionmovil.ui.screens.contacto_form.ContactoFormViewModelFactory
 import com.example.gestionmovil.ui.screens.evento_detail.EventoDetailScreen
 import com.example.gestionmovil.ui.screens.evento_form.EventoFormScreen
 import com.example.gestionmovil.ui.screens.evento_form.EventoFormViewModel
@@ -44,17 +59,19 @@ import com.example.gestionmovil.ui.screens.oportunidad_form.OportunidadFormViewM
 import com.example.gestionmovil.ui.screens.oportunidad_list.OportunidadListScreen
 import com.example.gestionmovil.ui.screens.oportunidad_list.OportunidadListViewModel
 import com.example.gestionmovil.ui.screens.oportunidad_list.OportunidadListViewModelFactory
+import com.example.gestionmovil.ui.screens.perfil.PerfilFotoScreen
 import com.example.gestionmovil.ui.seguimiento.SeguimientoScreen
 import com.example.gestionmovil.ui.seguimiento.SeguimientoViewModel
 import com.example.gestionmovil.ui.seguimiento.SeguimientoViewModelFactory
 import com.example.gestionmovil.ui.theme.Registro.RegistroScreen
-import androidx.compose.foundation.layout.padding
+import kotlinx.coroutines.launch
 
 @Composable
 fun AppNavegacion(
     navController: NavHostController = rememberNavController()
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     // Estado que conserva la sesión del usuario en el grafo de navegación
     var usuarioActual by remember { mutableStateOf<UsuarioEntity?>(null) }
@@ -99,7 +116,7 @@ fun AppNavegacion(
             )
         }
 
-// --- PANTALLA PRINCIPAL ADAPTADA SEGÚN EL ROL ---
+        // --- PANTALLA PRINCIPAL ADAPTADA SEGÚN EL ROL ---
         composable(Rutas.Home.ruta) {
             val db = AppDatabase.getDatabase(context.applicationContext)
             val repository = OportunidadRepository(db.oportunidadDao())
@@ -112,12 +129,37 @@ fun AppNavegacion(
                 navController = navController,
                 userRole = usuarioActual?.rol ?: "Cliente",
                 userName = usuarioActual?.pNombre ?: "Usuario",
-                cantidadOportunidades = cantidadOportunidades, // <-- Se pasa el conteo dinámico
+                fotoUri = usuarioActual?.fotoUri, // <-- Foto guardada en Room
+                cantidadOportunidades = cantidadOportunidades,
+                onNavigateToFotoPerfil = {
+                    navController.navigate(Rutas.PerfilFoto.ruta) // <-- Redirección desde el lápiz
+                },
                 onLogout = {
                     usuarioActual = null
                     navController.navigate(Rutas.Login.ruta) {
                         popUpTo(0) { inclusive = true }
                     }
+                }
+            )
+        }
+
+        // --- MÓDULO GESTIÓN FOTO DE PERFIL ---
+        composable(Rutas.PerfilFoto.ruta) {
+            PerfilFotoScreen(
+                fotoActualUri = usuarioActual?.fotoUri,
+                onFotoGuardada = { nuevaUri ->
+                    usuarioActual?.let { usuario ->
+                        val usuarioActualizado = usuario.copy(fotoUri = nuevaUri)
+                        usuarioActual = usuarioActualizado
+
+                        // Persistencia asíncrona en Room
+                        coroutineScope.launch {
+                            database.usuarioDao().actualizarFotoPerfil(usuario.id, nuevaUri)
+                        }
+                    }
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -217,7 +259,12 @@ fun AppNavegacion(
 
         // --- FORMULARIO DE CONTACTO ---
         composable(Rutas.ContactoForm.ruta) {
-            val contactoViewModel: ContactoFormViewModel = viewModel()
+            val db = AppDatabase.getDatabase(context.applicationContext)
+            val repository = ContactoRepository(db.contactoDao())
+
+            val contactoViewModel: ContactoFormViewModel = viewModel(
+                factory = ContactoFormViewModelFactory(repository)
+            )
 
             ContactoFormScreen(
                 viewModel = contactoViewModel,
@@ -272,34 +319,63 @@ fun AppNavegacion(
         composable(Rutas.Historial.ruta) {
             PlaceholderScreen(titulo = "Historial de Actividades", navController = navController)
         }
+
+        // --- MÓDULO GESTIÓN FOTO DE PERFIL ---
+        composable(Rutas.PerfilFoto.ruta) {
+            PerfilFotoScreen(
+                fotoActualUri = usuarioActual?.fotoUri,
+                onFotoGuardada = { nuevaUri ->
+                    usuarioActual?.let { usuario ->
+                        val usuarioActualizado = usuario.copy(fotoUri = nuevaUri)
+                        usuarioActual = usuarioActualizado
+
+                        // Persistencia asíncrona en Room
+                        coroutineScope.launch {
+                            database.usuarioDao().actualizarFotoPerfil(usuario.id, nuevaUri)
+                        }
+                    }
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateHome = {
+                    navController.navigate(Rutas.Home.ruta) {
+                        popUpTo(Rutas.Home.ruta) { inclusive = true }
+                    }
+                }
+            )
+        }
+
     }
 }
 
-@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlaceholderScreen(titulo: String, navController: NavHostController) {
-    androidx.compose.material3.Scaffold(
+    Scaffold(
         topBar = {
-            androidx.compose.material3.TopAppBar(
-                title = { androidx.compose.material3.Text(titulo) },
+            TopAppBar(
+                title = { Text(titulo) },
                 navigationIcon = {
-                    androidx.compose.material3.IconButton(onClick = { navController.popBackStack() }) {
-                        androidx.compose.material3.Icon(
-                            imageVector = androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowBack,
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver"
                         )
                     }
                 },
                 actions = {
-                    androidx.compose.material3.IconButton(
+                    IconButton(
                         onClick = {
                             navController.navigate(Rutas.Home.ruta) {
                                 popUpTo(Rutas.Home.ruta) { inclusive = true }
                             }
                         }
                     ) {
-                        androidx.compose.material3.Icon(
-                            imageVector = androidx.compose.material.icons.Icons.Default.Home,
+                        Icon(
+                            imageVector = Icons.Default.Home,
                             contentDescription = "Ir a Inicio"
                         )
                     }
@@ -307,15 +383,15 @@ fun PlaceholderScreen(titulo: String, navController: NavHostController) {
             )
         }
     ) { paddingValues ->
-        androidx.compose.foundation.layout.Box(
-            modifier = androidx.compose.ui.Modifier
+        Box(
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentAlignment = androidx.compose.ui.Alignment.Center
+            contentAlignment = Alignment.Center
         ) {
-            androidx.compose.material3.Text(
+            Text(
                 text = titulo,
-                style = androidx.compose.material3.MaterialTheme.typography.headlineMedium
+                style = MaterialTheme.typography.headlineMedium
             )
         }
     }
