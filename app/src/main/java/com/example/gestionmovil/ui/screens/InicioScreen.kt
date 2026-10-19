@@ -1,5 +1,13 @@
 package com.example.gestionmovil.ui.screens
 
+import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +24,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Notifications
@@ -26,6 +36,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -35,12 +46,20 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage // Import de Coil 2
 import com.example.gestionmovil.navigation.Rutas
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,12 +67,14 @@ import com.example.gestionmovil.navigation.Rutas
 fun InicioScreen(
     navController: NavController,
     userRole: String,
-    userName: String = "Usuario", // Parámetro para recibir el nombre del usuario
+    userName: String = "Usuario",
+    fotoUri: String? = null, // <-- URI de la foto guardada en Room
     cantidadOportunidades: Int = 0,
+    onNavigateToFotoPerfil: () -> Unit = {},
     onLogout: () -> Unit = {}
 ) {
-    // Extrae únicamente el primer nombre (ej: "Ana María" -> "Ana")
     val primerNombre = userName.trim().split("\\s+".toRegex()).firstOrNull()?.takeIf { it.isNotBlank() } ?: "Usuario"
+    var mostrarImagenAmpliada by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -105,9 +126,12 @@ fun InicioScreen(
 
                     Spacer(modifier = Modifier.width(12.dp))
 
-                    // Círculo con Fotografía de Perfil
+                    // Círculo interactivo con Fotografía de Perfil o Icono por defecto
                     Surface(
-                        modifier = Modifier.size(52.dp),
+                        modifier = Modifier
+                            .size(52.dp)
+                            .clip(CircleShape)
+                            .clickable { mostrarImagenAmpliada = true },
                         shape = CircleShape,
                         color = MaterialTheme.colorScheme.primary
                     ) {
@@ -115,12 +139,21 @@ fun InicioScreen(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = "Foto de perfil",
-                                tint = MaterialTheme.colorScheme.onPrimary,
-                                modifier = Modifier.size(32.dp)
-                            )
+                            if (!fotoUri.isNullOrBlank()) {
+                                AsyncImage(
+                                    model = Uri.parse(fotoUri),
+                                    contentDescription = "Foto de perfil",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = "Foto de perfil por defecto",
+                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier.size(32.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -190,6 +223,88 @@ fun InicioScreen(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Cerrar Sesión")
+            }
+        }
+    }
+
+    // Modal flotante con efecto Zoom Suave hacia el centro
+    if (mostrarImagenAmpliada) {
+        Dialog(onDismissRequest = { mostrarImagenAmpliada = false }) {
+            AnimatedVisibility(
+                visible = mostrarImagenAmpliada,
+                enter = scaleIn(animationSpec = tween(300)) + fadeIn(animationSpec = tween(300)),
+                exit = scaleOut(animationSpec = tween(300)) + fadeOut(animationSpec = tween(300))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(280.dp)
+                        .padding(8.dp)
+                ) {
+                    // Contenedor Circular Ampliado
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape),
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        tonalElevation = 8.dp
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            if (!fotoUri.isNullOrBlank()) {
+                                AsyncImage(
+                                    model = Uri.parse(fotoUri),
+                                    contentDescription = "Foto ampliada",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = "Foto por defecto",
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    modifier = Modifier.size(140.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    // Botón para cerrar en la esquina superior derecha
+                    IconButton(
+                        onClick = { mostrarImagenAmpliada = false },
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(4.dp)
+                    ) {
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Cerrar",
+                                modifier = Modifier.padding(4.dp)
+                            )
+                        }
+                    }
+
+                    // Ícono de Lápiz en la esquina inferior derecha
+                    FloatingActionButton(
+                        onClick = {
+                            mostrarImagenAmpliada = false
+                            onNavigateToFotoPerfil()
+                        },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .size(48.dp),
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Editar Foto",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
             }
         }
     }

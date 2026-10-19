@@ -1,10 +1,11 @@
 package com.example.gestionmovil.ui.screens.contacto_form
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.gestionmovil.data.local.entities.ContactoEntity
+import com.example.gestionmovil.data.repository.ContactoRepository
 import com.example.gestionmovil.utils.Validaciones
-import com.example.gestionmovil.data.repository.OrganizacionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ContactoFormViewModel(
-    private val repository: OrganizacionRepository
+    private val repository: ContactoRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ContactoFormUiState())
@@ -53,9 +54,9 @@ class ContactoFormViewModel(
     private fun validarFormulario() {
         val s = _uiState.value
         val isValid = s.nombreContactoError == null && s.nombreContacto.isNotBlank() &&
-                      s.cargoError == null && s.cargo.isNotBlank() &&
-                      s.correoError == null && s.correo.isNotBlank() &&
-                      s.telefonoError == null && s.telefono.isNotBlank()
+                s.cargoError == null && s.cargo.isNotBlank() &&
+                s.correoError == null && s.correo.isNotBlank() &&
+                s.telefonoError == null && s.telefono.isNotBlank()
 
         _uiState.update { it.copy(isFormValid = isValid) }
     }
@@ -77,8 +78,20 @@ class ContactoFormViewModel(
                 fechaUltimoContacto = currentDate,
                 observacion = s.observacion
             )
-            repository.insertContacto(contact)
+            repository.insertarContacto(contact) // <-- Usa exactamente tu método de ContactoRepository
             _uiState.update { it.copy(isSavedSuccess = true) }
         }
+    }
+}
+
+class ContactoFormViewModelFactory(
+    private val repository: ContactoRepository
+) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(ContactoFormViewModel::class.java)) {
+            return ContactoFormViewModel(repository) as T
+        }
+        throw IllegalArgumentException("ViewModel class no reconocida")
     }
 }

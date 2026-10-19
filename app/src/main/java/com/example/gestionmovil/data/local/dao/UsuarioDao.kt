@@ -28,4 +28,6 @@ interface UsuarioDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarUsuarios(usuarios: List<UsuarioEntity>)
 
+    @Query("UPDATE usuarios SET fotoUri = :fotoUri WHERE id = :id")
+    suspend fun actualizarFotoPerfil(id: String, fotoUri: String?)
 }
