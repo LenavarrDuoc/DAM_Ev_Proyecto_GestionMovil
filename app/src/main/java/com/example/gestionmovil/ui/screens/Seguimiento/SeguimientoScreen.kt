@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gestionmovil.data.local.entities.SeguimientoEntity
 
@@ -222,6 +223,46 @@ fun FormularioSeguimientoContent(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Guardar Registro")
+        }
+    }
+}
+
+// --- PREVIEWS PARA ANDROID STUDIO ---
+
+@Preview(showBackground = true, name = "Tarjeta de Seguimiento")
+@Composable
+fun ItemSeguimientoCardPreview() {
+    MaterialTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            ItemSeguimientoCard(
+                seguimiento = SeguimientoEntity(
+                    id = 1L,
+                    oportunidadId = 100L,
+                    tipoGestion = "Llamada de Calificación",
+                    fechaGestion = "2026-10-19",
+                    propuesta = "Implementación del módulo CRM Móvil",
+                    respuestaCliente = "Interesados en la propuesta, solicitaron ajustar presupuesto.",
+                    proximaAccion = "Enviar cotización actualizada",
+                    fechaProximaAccion = "2026-10-25"
+                ),
+                onEditar = {},
+                onEliminar = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Estado Vacío")
+@Composable
+fun SeguimientoVacioPreview() {
+    MaterialTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("No hay gestiones registradas para esta oportunidad.")
         }
     }
 }
