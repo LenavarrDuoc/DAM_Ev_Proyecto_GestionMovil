@@ -1,6 +1,7 @@
 package com.example.gestionmovil.ui.screens.oportunidad_detail
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,14 +9,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BusinessCenter
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PriorityHigh
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gestionmovil.data.local.entities.UsuarioEntity
 import com.example.gestionmovil.ui.screens.oportunidad_form.DropdownSelector
@@ -43,7 +49,9 @@ fun OportunidadDetailScreen(
     oportunidadId: Long,
     viewModel: OportunidadDetailViewModel,
     usuarioActual: UsuarioEntity?,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToSeguimiento: (Long) -> Unit = {},
+    onNavigateToHome: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -51,7 +59,6 @@ fun OportunidadDetailScreen(
         viewModel.loadOportunidad(oportunidadId)
     }
 
-    // Asumiendo que obtenemos el usuario actual o su rol desde la sesión/state
     val esSupervisor = usuarioActual?.esSupervisor() == true
     val esEjecutivo = usuarioActual?.esEjecutivo() == true
 
@@ -60,10 +67,27 @@ fun OportunidadDetailScreen(
             TopAppBar(
                 title = { Text("Detalle de Oportunidad") },
                 navigationIcon = {
+                    // BOTÓN ATRÁS -> Vuelve a OportunidadListScreen
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver"
+                        )
+                    }
+                },
+                actions = {
+                    // BOTÓN SEGUIMIENTO -> Va directo a la bitácora de gestiones
+                    IconButton(onClick = { onNavigateToSeguimiento(oportunidadId) }) {
+                        Icon(
+                            imageVector = Icons.Default.History,
+                            contentDescription = "Ver Seguimiento"
+                        )
+                    }
+                    // BOTÓN HOME -> Vuelve directo a InicioScreen
+                    IconButton(onClick = onNavigateToHome) {
+                        Icon(
+                            imageVector = Icons.Default.Home,
+                            contentDescription = "Ir a Inicio"
                         )
                     }
                 }
@@ -146,6 +170,21 @@ fun OportunidadDetailScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
+                    // Botón para Ir a la Bitácora de Seguimiento
+                    Button(
+                        onClick = { onNavigateToSeguimiento(op.id) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.History,
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Ver Bitácora / Registro de Seguimiento")
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     // Cambio Dinámico de Estado
                     Text(
                         text = "Gestión de Estado de la Oportunidad",
@@ -153,11 +192,7 @@ fun OportunidadDetailScreen(
                         color = MaterialTheme.colorScheme.primary
                     )
 
-
-
-                    // Opciones de estado permitidas según el Rol
                     val opcionesEstado = if (esEjecutivo) {
-                        // El ejecutivo no puede confirmar ("Participación confirmada") ni descartar ("Oportunidad descartada")
                         listOf(
                             "Evento identificado",
                             "Contacto pendiente",
@@ -166,7 +201,6 @@ fun OportunidadDetailScreen(
                             "En espera de respuesta"
                         )
                     } else {
-                        // El Supervisor o Admin tiene acceso total
                         listOf(
                             "Evento identificado", "Contacto pendiente", "Contacto realizado",
                             "Propuesta enviada", "En espera de respuesta", "Participación confirmada",
@@ -192,7 +226,6 @@ fun OportunidadDetailScreen(
                             color = MaterialTheme.colorScheme.primary
                         )
 
-                        // Lista con las cuentas ficticias de prueba (Ana, Mateo, Sofía)
                         val ejecutivosDisponibles = listOf("Ana López", "Mateo Silva", "Sofía Rojas")
 
                         DropdownSelector(
@@ -233,5 +266,81 @@ fun DetailItem(icon: ImageVector, label: String, value: String) {
                 style = MaterialTheme.typography.bodyLarge
             )
         }
+    }
+}
+
+// --- PREVIEWS PARA ANDROID STUDIO ---
+
+@Preview(showBackground = true, name = "Ítem de Detalle")
+@Composable
+fun DetailItemPreview() {
+    MaterialTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            DetailItem(
+                icon = Icons.Default.BusinessCenter,
+                label = "Tipo de Oportunidad",
+                value = "Licitación Pública"
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Tarjeta Principal Oportunidad")
+@Composable
+fun OportunidadCardPreview() {
+    MaterialTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Licencia CRM Corporativo 2026",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = "Implementación de licencias para el equipo comercial de la zona central.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
+    }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, name = "Barra Superior (TopAppBar)")
+@Composable
+fun OportunidadDetailTopBarPreview() {
+    MaterialTheme {
+        TopAppBar(
+            title = { Text("Detalle de Oportunidad") },
+            navigationIcon = {
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Volver"
+                    )
+                }
+            },
+            actions = {
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.Default.History,
+                        contentDescription = "Ver Seguimiento"
+                    )
+                }
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.Default.Home,
+                        contentDescription = "Ir a Inicio"
+                    )
+                }
+            }
+        )
     }
 }
