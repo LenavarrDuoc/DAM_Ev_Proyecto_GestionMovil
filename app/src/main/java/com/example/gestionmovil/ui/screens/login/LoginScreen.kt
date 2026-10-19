@@ -1,4 +1,4 @@
-package com.example.gestionmovil.ui.screens.Login
+package com.example.gestionmovil.ui.screens.login
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions

@@ -31,21 +31,16 @@ import com.example.gestionmovil.data.local.entities.RolUsuarioEntity
         ContactoEntity::class,
         OportunidadEntity::class,
         SeguimientoEntity::class,
-        UsuarioEntity::class // O UsuarioEntity::class según esté definido en tu proyecto
+        UsuarioEntity::class
     ],
     version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
-    // DAOs provenientes de la rama principal (Usuarios y Seguimiento)
     abstract fun usuarioDao(): UsuarioDao
     abstract fun seguimientoDao(): SeguimientoDao
-
-    // DAOs provenientes de la rama Oportunidades y Contactos
     abstract fun oportunidadDao(): OportunidadDao
-
-    /*abstract fun contactoDao(): ContactoDao*/
     abstract fun organizacionDao(): OrganizacionDao
 
     companion object {
@@ -66,18 +61,36 @@ abstract class AppDatabase : RoomDatabase() {
                 instance
             }
         }
+
         private class AppDatabaseCallback : RoomDatabase.Callback() {
-            override suspend fun onCreate(connection: SQLiteConnection) {
-                super.onCreate(connection)
-                INSTANCE?.let { database ->
-                    poblarCuentasIniciales(database.usuarioDao())
+            override suspend fun onOpen(connection: SQLiteConnection) {
+                super.onOpen(connection)
+
+                // Disparamos en un hilo de E/S desacoplado
+                CoroutineScope(Dispatchers.IO).launch {
+                    // Esperamos a que la instancia Singleton esté asignada
+                    var db = INSTANCE
+                    var retries = 0
+                    while (db == null && retries < 10) {
+                        kotlinx.coroutines.delay(100)
+                        db = INSTANCE
+                        retries++
+                    }
+
+                    db?.let { database ->
+                        val usuarioDao = database.usuarioDao()
+                        val adminExistente = usuarioDao.obtenerPorEmail("admin@empresa.cl")
+                        if (adminExistente == null) {
+                            poblarCuentasIniciales(usuarioDao)
+                        }
+                    }
                 }
             }
+
             suspend fun poblarCuentasIniciales(usuarioDao: UsuarioDao) {
                 val passwordHasheada = com.example.gestionmovil.utils.Seguridad.hashPassword("Clave123+")
 
                 val cuentasPrueba = listOf(
-                    // 1 Administrador
                     UsuarioEntity(
                         pNombre = "Admin",
                         pApellido = "Sistema",
@@ -85,7 +98,6 @@ abstract class AppDatabase : RoomDatabase() {
                         password = passwordHasheada,
                         rol = RolUsuarioEntity.ADMIN.name
                     ),
-                    // 1 Supervisor Comercial
                     UsuarioEntity(
                         pNombre = "Carlos",
                         pApellido = "Mendoza",
@@ -93,7 +105,6 @@ abstract class AppDatabase : RoomDatabase() {
                         password = passwordHasheada,
                         rol = RolUsuarioEntity.SUPERVISOR.name
                     ),
-                    // 3 Ejecutivos Comerciales
                     UsuarioEntity(
                         pNombre = "Ana",
                         pApellido = "López",
@@ -119,6 +130,5 @@ abstract class AppDatabase : RoomDatabase() {
                 usuarioDao.insertarUsuarios(cuentasPrueba)
             }
         }
-
     }
 }

@@ -3,7 +3,6 @@ package com.example.gestionmovil.navigation
 import android.app.Application
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -22,7 +21,7 @@ import com.example.gestionmovil.ui.screens.InicioScreen
 import com.example.gestionmovil.ui.seguimiento.SeguimientoScreen
 import com.example.gestionmovil.ui.seguimiento.SeguimientoViewModel
 import com.example.gestionmovil.ui.seguimiento.SeguimientoViewModelFactory
-import com.example.gestionmovil.ui.screens.Login.LoginScreen
+import com.example.gestionmovil.ui.screens.login.LoginScreen
 import com.example.gestionmovil.ui.screens.contacto_form.ContactoFormScreen
 import com.example.gestionmovil.ui.screens.contacto_form.ContactoFormViewModel
 import com.example.gestionmovil.ui.screens.oportunidad_detail.OportunidadDetailScreen
@@ -37,6 +36,7 @@ import com.example.gestionmovil.ui.screens.oportunidad_list.OportunidadListViewM
 import com.example.gestionmovil.ui.theme.Registro.RegistroScreen
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.gestionmovil.ui.screens.login.LoginViewModel
 
 @Composable
 fun AppNavegacion(
@@ -52,8 +52,15 @@ fun AppNavegacion(
         startDestination = Rutas.Login.ruta
     ) {
         composable(Rutas.Login.ruta) {
+            val loginViewModel: LoginViewModel = viewModel()
+
             LoginScreen(
+                viewModel = loginViewModel,
                 onLoginSuccess = { usuario ->
+                    // 2. SE GUARDA EL USUARIO EN EL ESTADO GLOBAL AL AUTENTICAR
+                    usuarioActual = usuario
+
+                    // Navegar al Home limpiando el stack de Login
                     navController.navigate(Rutas.Home.ruta) {
                         popUpTo(Rutas.Login.ruta) { inclusive = true }
                     }
@@ -79,7 +86,17 @@ fun AppNavegacion(
 
 // --- PANTALLA PRINCIPAL ADAPTADA SEGÚN EL ROL ---
         composable(Rutas.Home.ruta) {
-            InicioScreen(navController = navController)
+            InicioScreen(
+                navController = navController,
+                userRole = usuarioActual?.rol ?: "Cliente",
+                onLogout = {
+                    usuarioActual = null
+
+                    navController.navigate(Rutas.Login.ruta) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
         }
 
         // --- MÓDULO SEGUIMIENTO ---
@@ -131,29 +148,22 @@ fun AppNavegacion(
 
         composable(
             route = Rutas.OportunidadDetail.ruta,
-            arguments = listOf(
-                navArgument("oportunidadId") { type = NavType.LongType }
-            )
+            arguments = listOf(navArgument("oportunidadId") { type = NavType.LongType })
         ) { backStackEntry ->
-            // 1. Extraer el id desde la ruta
             val oportunidadId = backStackEntry.arguments?.getLong("oportunidadId") ?: 0L
 
-            // 2. Crear las dependencias
             val database = AppDatabase.getDatabase(context.applicationContext)
             val repository = OportunidadRepository(database.oportunidadDao())
 
-            // 3. Crear el ViewModel con su Factory
             val detailViewModel: OportunidadDetailViewModel = viewModel(
                 factory = OportunidadDetailViewModelFactory(repository)
             )
 
-            // 4. Invocar la pantalla con su firma exacta (ella misma dispara el LaunchedEffect)
             OportunidadDetailScreen(
                 oportunidadId = oportunidadId,
                 viewModel = detailViewModel,
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
+                usuarioActual = usuarioActual, // <-- Pasar el objeto UsuarioEntity guardado al loguear
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 

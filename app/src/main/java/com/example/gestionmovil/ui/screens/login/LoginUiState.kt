@@ -1,4 +1,4 @@
-package com.example.gestionmovil.ui.screens.Login
+package com.example.gestionmovil.ui.screens.login
 
 data class LoginUiState(
     val email: String = "",

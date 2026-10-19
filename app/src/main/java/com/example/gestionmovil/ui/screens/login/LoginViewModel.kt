@@ -1,4 +1,4 @@
-package com.example.gestionmovil.ui.screens.Login
+package com.example.gestionmovil.ui.screens.login
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

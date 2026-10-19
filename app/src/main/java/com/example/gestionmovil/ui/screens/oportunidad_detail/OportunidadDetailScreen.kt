@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.example.gestionmovil.data.local.entities.UsuarioEntity
 import com.example.gestionmovil.ui.screens.oportunidad_form.DropdownSelector
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,6 +42,7 @@ import com.example.gestionmovil.ui.screens.oportunidad_form.DropdownSelector
 fun OportunidadDetailScreen(
     oportunidadId: Long,
     viewModel: OportunidadDetailViewModel,
+    usuarioActual: UsuarioEntity?,
     onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -48,6 +50,10 @@ fun OportunidadDetailScreen(
     LaunchedEffect(oportunidadId) {
         viewModel.loadOportunidad(oportunidadId)
     }
+
+    // Asumiendo que obtenemos el usuario actual o su rol desde la sesión/state
+    val esSupervisor = usuarioActual?.esSupervisor() == true
+    val esEjecutivo = usuarioActual?.esEjecutivo() == true
 
     Scaffold(
         topBar = {
@@ -147,18 +153,57 @@ fun OportunidadDetailScreen(
                         color = MaterialTheme.colorScheme.primary
                     )
 
-                    DropdownSelector(
-                        label = "Estado Actual",
-                        selectedOption = op.estado,
-                        options = listOf(
+
+
+                    // Opciones de estado permitidas según el Rol
+                    val opcionesEstado = if (esEjecutivo) {
+                        // El ejecutivo no puede confirmar ("Participación confirmada") ni descartar ("Oportunidad descartada")
+                        listOf(
+                            "Evento identificado",
+                            "Contacto pendiente",
+                            "Contacto realizado",
+                            "Propuesta enviada",
+                            "En espera de respuesta"
+                        )
+                    } else {
+                        // El Supervisor o Admin tiene acceso total
+                        listOf(
                             "Evento identificado", "Contacto pendiente", "Contacto realizado",
                             "Propuesta enviada", "En espera de respuesta", "Participación confirmada",
                             "Oportunidad descartada"
-                        ),
+                        )
+                    }
+
+                    DropdownSelector(
+                        label = "Estado Actual",
+                        selectedOption = op.estado,
+                        options = opcionesEstado,
                         onOptionSelected = { newStatus ->
-                            viewModel.updateEstado(newStatus, currentDate = "2026-10-16")
+                            viewModel.updateEstado(newStatus, currentDate = "2026-10-19")
                         }
                     )
+
+                    // Reasignación exclusiva para el Supervisor
+                    if (esSupervisor) {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "Asignación de Ejecutivo Responsable",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+
+                        // Lista con las cuentas ficticias de prueba (Ana, Mateo, Sofía)
+                        val ejecutivosDisponibles = listOf("Ana López", "Mateo Silva", "Sofía Rojas")
+
+                        DropdownSelector(
+                            label = "Ejecutivo Asignado",
+                            selectedOption = op.responsableInterno,
+                            options = ejecutivosDisponibles,
+                            onOptionSelected = { nuevoEjecutivo ->
+                                viewModel.reorganizarResponsable(op.id, nuevoEjecutivo)
+                            }
+                        )
+                    }
                 }
             }
         }

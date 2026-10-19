@@ -4,6 +4,8 @@ import com.example.gestionmovil.data.local.entities.OportunidadEntity
 
 data class OportunidadDetailUiState(
     val oportunidad: OportunidadEntity? = null,
-    val isLoading: Boolean = true,
-    val isStatusUpdated: Boolean = false
+    val isLoading: Boolean = false,
+    val isStatusUpdated: Boolean = false,
+    val isResponsableUpdated: Boolean = false,
+    val errorMessage: String? = null
 )
