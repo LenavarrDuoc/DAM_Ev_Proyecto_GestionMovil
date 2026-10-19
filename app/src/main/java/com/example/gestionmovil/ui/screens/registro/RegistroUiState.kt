@@ -1,4 +1,4 @@
-package com.example.gestionmovil.ui.theme.registro
+package com.example.gestionmovil.ui.screens.registro
 
 import java.util.Date
 

@@ -3,11 +3,10 @@ package com.example.gestionmovil.ui.theme.Registro
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gestionmovil.data.AppDatabase
-import com.example.gestionmovil.data.UsuarioRepository
-import com.example.gestionmovil.models.Usuario
-import com.example.gestionmovil.ui.theme.registro.RegistroUiState
-import com.example.gestionmovil.utils.Seguridad
+import com.example.gestionmovil.data.local.AppDatabase
+import com.example.gestionmovil.data.repository.UsuarioRepository
+import com.example.gestionmovil.data.local.entities.UsuarioEntity
+import com.example.gestionmovil.ui.screens.registro.RegistroUiState
 import com.example.gestionmovil.utils.ValidacionesRegistro
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -128,7 +127,7 @@ class RegistroViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            val nuevoUsuario = Usuario(
+            val nuevoUsuarioEntity = UsuarioEntity(
                 id = UUID.randomUUID().toString(),
                 pNombre = estado.primerNombre.trim(),
                 sNombre = estado.segundoNombre.trim().ifEmpty { null },
@@ -139,7 +138,7 @@ class RegistroViewModel(application: Application) : AndroidViewModel(application
                 password = estado.password
             )
 
-            val resultado = repository.registrarUsuario(nuevoUsuario)
+            val resultado = repository.registrarUsuario(nuevoUsuarioEntity)
 
             _uiState.update { it.copy(isLoading = false) }
 

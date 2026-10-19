@@ -1,11 +1,11 @@
-package com.example.gestionmovil.ui.theme.Login
+package com.example.gestionmovil.ui.screens.Login
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gestionmovil.data.AppDatabase
-import com.example.gestionmovil.data.UsuarioRepository
-import com.example.gestionmovil.models.Usuario
+import com.example.gestionmovil.data.local.AppDatabase
+import com.example.gestionmovil.data.repository.UsuarioRepository
+import com.example.gestionmovil.data.local.entities.UsuarioEntity
 import com.example.gestionmovil.utils.Validaciones
 import com.example.gestionmovil.utils.Validaciones.esCorreoValido
 import com.example.gestionmovil.utils.Validaciones.validarPassword
@@ -62,7 +62,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     // ─── AUTENTICACIÓN DE USUARIO ─────────────────────────────────
 
-    fun onLoginClick(onSuccess: (Usuario) -> Unit) {
+    fun onLoginClick(onSuccess: (UsuarioEntity) -> Unit) {
         val estado = _uiState.value
 
         // 1. Validar campos

@@ -1,6 +1,5 @@
 package com.example.gestionmovil.navigation
 
-import android.R.attr.type
 import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -11,12 +10,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.gestionmovil.data.AppDatabase
+import com.example.gestionmovil.data.local.AppDatabase
 import com.example.gestionmovil.data.repository.SeguimientoRepository
 import com.example.gestionmovil.ui.seguimiento.SeguimientoScreen
 import com.example.gestionmovil.ui.seguimiento.SeguimientoViewModel
 import com.example.gestionmovil.ui.seguimiento.SeguimientoViewModelFactory
-import com.example.gestionmovil.ui.theme.Login.LoginScreen
+import com.example.gestionmovil.ui.screens.Login.LoginScreen
+import com.example.gestionmovil.ui.screens.contacto_form.ContactoFormScreen
+import com.example.gestionmovil.ui.screens.contacto_form.ContactoFormViewModel
+import com.example.gestionmovil.ui.screens.oportunidad_form.OportunidadFormScreen
+import com.example.gestionmovil.ui.screens.oportunidad_form.OportunidadFormViewModel
 import com.example.gestionmovil.ui.theme.Registro.RegistroScreen
 
 @Composable
@@ -84,6 +87,30 @@ fun AppNavegacion(
                 viewModel = seguimientoViewModel,
                 oportunidadId = oportunidadId,
                 onVolver = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // --- FORMULARIO DE OPORTUNIDAD ---
+        composable(Rutas.OportunidadForm.ruta) {
+            val formViewModel: OportunidadFormViewModel = viewModel()
+
+            OportunidadFormScreen(
+                viewModel = formViewModel,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // --- FORMULARIO DE CONTACTO ---
+        composable(Rutas.ContactoForm.ruta) {
+            val contactoViewModel: ContactoFormViewModel = viewModel()
+
+            ContactoFormScreen(
+                viewModel = contactoViewModel,
+                onNavigateBack = {
                     navController.popBackStack()
                 }
             )

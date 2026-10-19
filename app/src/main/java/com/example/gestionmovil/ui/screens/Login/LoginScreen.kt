@@ -1,4 +1,4 @@
-package com.example.gestionmovil.ui.theme.Login
+package com.example.gestionmovil.ui.screens.Login
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -21,11 +21,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gestionmovil.models.Usuario
+import com.example.gestionmovil.data.local.entities.UsuarioEntity
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: (Usuario) -> Unit,
+    onLoginSuccess: (UsuarioEntity) -> Unit,
     onNavigateToRegister: () -> Unit = {},
     viewModel: LoginViewModel = viewModel()
 ) {

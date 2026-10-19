@@ -1,4 +1,4 @@
-package com.example.gestionmovil.models
+package com.example.gestionmovil.data.local.entities
 
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
@@ -6,7 +6,7 @@ import java.util.UUID
 
 @Entity(tableName = "usuarios")
 
-data class Usuario (
+data class UsuarioEntity (
     /*@PrimaryKey(autoGenerate = true)*/
     @PrimaryKey
     val id: String = UUID.randomUUID().toString(),
