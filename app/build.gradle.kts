@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kover)
 }
 
 android {
@@ -34,6 +35,42 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+}
+
+// Configuración de lo que debe cubrir Kover en los tests.
+kover {
+    reports {
+        filters {
+            includes {
+                classes(
+                     // Utilidades y lógica pura
+                    "com.example.gestionmovil.utils.Validaciones*",
+                    "com.example.gestionmovil.utils.ValidacionesRegistro*",
+                    "com.example.gestionmovil.utils.Seguridad*",
+
+                    // Repositorios (Lógica de negocio y datos)
+                    "com.example.gestionmovil.data.repository.UsuarioRepository*",
+                    "com.example.gestionmovil.data.repository.OportunidadRepository*",
+                    "com.example.gestionmovil.data.repository.OrganizacionRepository*",
+                    "com.example.gestionmovil.data.repository.ContactoRepository*",
+                    "com.example.gestionmovil.data.repository.EventoRepository*",
+                    "com.example.gestionmovil.data.repository.SeguimientoRepository*",
+
+                    // ViewModels (Lógica de presentación y estados)
+                    /*
+                    "com.example.gestionmovil.ui.screens.login.LoginViewModel*",
+                    "com.example.gestionmovil.ui.theme.Registro.RegistroViewModel*",
+                    "com.example.gestionmovil.ui.screens.InicioViewModel*",
+                    "com.example.gestionmovil.ui.seguimiento.SeguimientoViewModel*",
+                    "com.example.gestionmovil.ui.screens.contacto_form.ContactoFormViewModel*",
+                    "com.example.gestionmovil.ui.screens.evento_form.EventoFormViewModel*",
+                    "com.example.gestionmovil.ui.screens.oportunidad_form.OportunidadFormViewModel*",
+                    "com.example.gestionmovil.ui.screens.oportunidad_list.OportunidadListViewModel*",
+                    "com.example.gestionmovil.ui.screens.oportunidad_detail.OportunidadDetailViewModel*"*/
+                )
+            }
+        }
     }
 }
 
