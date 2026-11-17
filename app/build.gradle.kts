@@ -36,6 +36,10 @@ android {
     buildFeatures {
         compose = true
     }
+    //Al lanzar un test devuelve el valor por defecto en vez de un error (boleanos devuelven falso, int 0 y objetos null bla bla)
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 // Configuración de lo que debe cubrir Kover en los tests.
@@ -62,7 +66,7 @@ kover {
                     "com.example.gestionmovil.data.repository.SeguimientoRepository*",
 
                     // ViewModels (Lógica de presentación y estados)
-                    /*
+
                     "com.example.gestionmovil.ui.screens.login.LoginViewModel*",
                     "com.example.gestionmovil.ui.theme.Registro.RegistroViewModel*",
                     "com.example.gestionmovil.ui.screens.InicioViewModel*",
@@ -71,13 +75,14 @@ kover {
                     "com.example.gestionmovil.ui.screens.evento_form.EventoFormViewModel*",
                     "com.example.gestionmovil.ui.screens.oportunidad_form.OportunidadFormViewModel*",
                     "com.example.gestionmovil.ui.screens.oportunidad_list.OportunidadListViewModel*",
-                    "com.example.gestionmovil.ui.screens.oportunidad_detail.OportunidadDetailViewModel*"*/
+                    "com.example.gestionmovil.ui.screens.oportunidad_detail.OportunidadDetailViewModel*"
                 )
             }
         }
     }
 }
 
+//Se agrega kotlinx-coroutines para ejeccion sincrona, (al ser test varias cosas se hacen por separados y se cae :c)
 dependencies {
     implementation("io.coil-kt:coil-compose:2.7.0")
     implementation(libs.androidx.compose.runtime)
@@ -95,6 +100,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     testImplementation(libs.junit)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
