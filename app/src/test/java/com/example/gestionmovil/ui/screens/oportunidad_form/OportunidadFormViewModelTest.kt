@@ -1,5 +1,6 @@
 package com.example.gestionmovil.ui.screens.oportunidad_form
 
+import androidx.lifecycle.ViewModel
 import com.example.gestionmovil.data.repository.OportunidadRepository
 import com.example.gestionmovil.fakes.FakeOportunidadDao
 import com.example.gestionmovil.utils.TestUtils
@@ -64,5 +65,33 @@ class OportunidadFormViewModelTest {
         assertTrue(viewModel.uiState.value.isSavedSuccess)
         assertEquals(1, fakeDao.oportunidades.size)
         assertEquals("Venta Licencias", fakeDao.oportunidades[0].nombre)
+    }
+
+    @Test
+    fun testSaveOportunidad_FormInvalido() = runBlocking {
+        viewModel.onNombreChanged("") // Inválido
+        viewModel.onDescripcionChanged("Desc")
+        viewModel.onFuenteInformacionChanged("Web")
+        viewModel.onResponsableChanged("Resp")
+
+        assertFalse(viewModel.uiState.value.isFormValid)
+
+        viewModel.saveOportunidad("2025-01-01")
+        assertFalse(viewModel.uiState.value.isSavedSuccess)
+        assertEquals(0, fakeDao.oportunidades.size)
+    }
+
+    @Test
+    fun testOportunidadFormViewModelFactory() {
+        val factory = OportunidadFormViewModelFactory(repository)
+        val created = factory.create(OportunidadFormViewModel::class.java)
+        assertNotNull(created)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testOportunidadFormViewModelFactory_Desconocida() {
+        val factory = OportunidadFormViewModelFactory(repository)
+        class DummyViewModel : ViewModel()
+        factory.create(DummyViewModel::class.java)
     }
 }

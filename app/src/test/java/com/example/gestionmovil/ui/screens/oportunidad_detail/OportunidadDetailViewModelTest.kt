@@ -1,5 +1,6 @@
 package com.example.gestionmovil.ui.screens.oportunidad_detail
 
+import androidx.lifecycle.ViewModel
 import com.example.gestionmovil.data.local.entities.OportunidadEntity
 import com.example.gestionmovil.data.repository.OportunidadRepository
 import com.example.gestionmovil.fakes.FakeOportunidadDao
@@ -67,6 +68,14 @@ class OportunidadDetailViewModelTest {
 
         val res = fakeDao.getOportunidadById(100L)
         assertEquals("Ganada", res?.estado)
+        assertTrue(viewModel.uiState.value.isStatusUpdated)
+    }
+
+    @Test
+    fun updateEstado_SinOportunidadCargada() = runBlocking {
+        // Al no haber cargado la oportunidad, updateEstado no debe hacer nada
+        viewModel.updateEstado("Ganada", "2025-01-05")
+        assertFalse(viewModel.uiState.value.isStatusUpdated)
     }
 
     @Test
@@ -84,5 +93,26 @@ class OportunidadDetailViewModelTest {
 
         val res = fakeDao.getOportunidadById(100L)
         assertEquals("Maria Supervisora", res?.responsableInterno)
+        assertTrue(viewModel.uiState.value.isResponsableUpdated)
+    }
+
+    @Test
+    fun reorganizarResponsable_SinOportunidadCargada() = runBlocking {
+        viewModel.reorganizarResponsable(100L, "Maria Supervisora")
+        assertFalse(viewModel.uiState.value.isResponsableUpdated)
+    }
+
+    @Test
+    fun testOportunidadDetailViewModelFactory() {
+        val factory = OportunidadDetailViewModelFactory(repository)
+        val created = factory.create(OportunidadDetailViewModel::class.java)
+        assertNotNull(created)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testOportunidadDetailViewModelFactory_Desconocida() {
+        val factory = OportunidadDetailViewModelFactory(repository)
+        class DummyViewModel : ViewModel()
+        factory.create(DummyViewModel::class.java)
     }
 }

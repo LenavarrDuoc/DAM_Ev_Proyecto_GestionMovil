@@ -15,6 +15,13 @@ class ValidacionesTest {
     }
 
     @Test
+    fun testEsCorreoValido() {
+        assertTrue(Validaciones.esCorreoValido("juan@example.com"))
+        assertFalse(Validaciones.esCorreoValido(""))
+        assertFalse(Validaciones.esCorreoValido("correo_invalido"))
+    }
+
+    @Test
     fun testEsNombreValido() {
         assertTrue(Validaciones.esNombreValido("Juan"))
         assertFalse(Validaciones.esNombreValido(" A "))
@@ -58,27 +65,40 @@ class ValidacionesTest {
     }
 
     @Test
-    fun testValidarLogin_CamposVacios() {
-        val res = Validaciones.validarLogin("", "")
-        assertEquals("Todos los campos son obligatorios", res)
+    fun testValidarLogin_TodasLasRamas() {
+        // Campos vacíos
+        assertEquals("Todos los campos son obligatorios", Validaciones.validarLogin("", "Password123!"))
+        assertEquals("Todos los campos son obligatorios", Validaciones.validarLogin("juan@example.com", ""))
+
+        // Correo inválido
+        assertEquals("El correo electrónico no tiene un formato válido", Validaciones.validarLogin("invalido", "Password123!"))
+
+        // Password inválida (falla complejidad)
+        assertEquals("La contraseña debe tener al menos 8 caracteres", Validaciones.validarLogin("juan@example.com", "Ab1!"))
+
+        // Éxito
+        assertNull(Validaciones.validarLogin("juan@example.com", "Password123!"))
     }
 
     @Test
-    fun testValidarRegistro_CamposIncompletos() {
-        val res = Validaciones.validarRegistro("", "Carlos", "Pérez", "", "test@example.com", "Password123!", "Password123!")
-        assertEquals("Por favor completa los campos obligatorios", res)
-    }
+    fun testValidarRegistro_TodasLasRamas() {
+        // Campos obligatorios faltantes
+        assertEquals("Por favor completa los campos obligatorios", Validaciones.validarRegistro("", "Carlos", "Pérez", "", "test@example.com", "Password123!", "Password123!"))
 
-    @Test
-    fun testValidarRegistro_NombresCortos() {
-        val res = Validaciones.validarRegistro("A", "", "B", "", "test@domain.com", "Password123!", "Password123!")
-        assertEquals("Los nombres y apellidos deben tener al menos 2 caracteres", res)
-    }
+        // Formato nombres inválido
+        assertEquals("Los nombres y apellidos deben tener al menos 2 caracteres", Validaciones.validarRegistro("A", "", "Pérez", "", "test@domain.com", "Password123!", "Password123!"))
 
-    @Test
-    fun testValidarRegistro_PasswordsNoCoinciden() {
-        val res = Validaciones.validarRegistro("Juan", "", "Pérez", "", "juan@domain.com", "Password123!", "Password999!")
-        assertEquals("Las contraseñas no coinciden", res)
+        // Correo inválido
+        assertEquals("El correo electrónico no tiene un formato válido", Validaciones.validarRegistro("Juan", "", "Pérez", "", "bademail", "Password123!", "Password123!"))
+
+        // Password débil
+        assertEquals("La contraseña debe tener al menos 8 caracteres", Validaciones.validarRegistro("Juan", "", "Pérez", "", "juan@domain.com", "123", "123"))
+
+        // Passwords no coinciden
+        assertEquals("Las contraseñas no coinciden", Validaciones.validarRegistro("Juan", "", "Pérez", "", "juan@domain.com", "Password123!", "Password999!"))
+
+        // Éxito
+        assertNull(Validaciones.validarRegistro("Juan", "Carlos", "Pérez", "Gómez", "juan@domain.com", "Password123!", "Password123!"))
     }
 
     @Test
@@ -89,15 +109,15 @@ class ValidacionesTest {
 
     @Test
     fun testValidarCorreo() {
-        assertNotNull(Validaciones.validarCorreo(""))
-        assertNotNull(Validaciones.validarCorreo("correo_invalido"))
+        assertEquals("El correo es obligatorio", Validaciones.validarCorreo(""))
+        assertEquals("Ingrese un correo ficticio válido", Validaciones.validarCorreo("correo_invalido"))
         assertNull(Validaciones.validarCorreo("test@domain.com"))
     }
 
     @Test
     fun testValidarTelefono() {
-        assertNotNull(Validaciones.validarTelefono(""))
-        assertNotNull(Validaciones.validarTelefono("123"))
+        assertEquals("El teléfono es obligatorio", Validaciones.validarTelefono(""))
+        assertEquals("El teléfono debe tener al menos 8 dígitos", Validaciones.validarTelefono("123"))
         assertNull(Validaciones.validarTelefono("+56912345678"))
     }
 }

@@ -68,6 +68,20 @@ class UsuarioRepositoryTest {
     }
 
     @Test
+    fun loginUsuario_Excepcion() = runBlocking {
+        val throwingDao = object : FakeUsuarioDao() {
+            override suspend fun obtenerPorEmail(email: String): UsuarioEntity? {
+                throw RuntimeException("Error BD")
+            }
+        }
+        val repo = UsuarioRepository(throwingDao)
+        val result = repo.loginUsuario("error@test.com", "Password123!")
+
+        assertTrue(result.isFailure)
+        assertEquals("Error BD", result.exceptionOrNull()?.message)
+    }
+
+    @Test
     fun registrarUsuario_Exitoso() = runBlocking {
         val nuevo = UsuarioEntity(
             id = "2",
@@ -109,5 +123,27 @@ class UsuarioRepositoryTest {
 
         assertTrue(result.isFailure)
         assertEquals("El correo ya se encuentra registrado", result.exceptionOrNull()?.message)
+    }
+
+    @Test
+    fun registrarUsuario_Excepcion() = runBlocking {
+        val throwingDao = object : FakeUsuarioDao() {
+            override suspend fun obtenerPorEmail(email: String): UsuarioEntity? {
+                throw RuntimeException("Error en insert BD")
+            }
+        }
+        val repo = UsuarioRepository(throwingDao)
+        val nuevo = UsuarioEntity(
+            id = "2",
+            pNombre = "Maria",
+            email = "maria@test.com",
+            password = "Password123!",
+            rol = "CLIENTE"
+        )
+
+        val result = repo.registrarUsuario(nuevo)
+
+        assertTrue(result.isFailure)
+        assertEquals("Error en insert BD", result.exceptionOrNull()?.message)
     }
 }

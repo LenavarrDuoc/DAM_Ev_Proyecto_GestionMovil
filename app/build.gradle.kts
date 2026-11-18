@@ -52,6 +52,8 @@ kover {
                     "com.example.gestionmovil.utils.Validaciones*",
                     "com.example.gestionmovil.utils.ValidacionesRegistro*",
                     "com.example.gestionmovil.utils.Seguridad*",
+                    "com.example.gestionmovil.utils.ImageUtils*",
+                    "com.example.gestionmovil.utils.CamaraUtils*",
 
                     // Mappers de Red (Conversión Retrofit DTOs <-> Entities)
                     "com.example.gestionmovil.data.remote.mapper.OportunidadMapper*",

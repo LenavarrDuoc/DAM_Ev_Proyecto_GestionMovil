@@ -21,7 +21,7 @@ class OrganizacionRepositoryTest {
     }
 
     @Test
-    fun insertAndGetOrganizacion() = runBlocking {
+    fun insertarYObtenerOrganizacionPorId() = runBlocking {
         val org = OrganizacionEntity(
             nombre = "Empresa ABC",
             tipoOrganizacion = "Privada",
@@ -38,7 +38,7 @@ class OrganizacionRepositoryTest {
     }
 
     @Test
-    fun updateOrganizacion() = runBlocking {
+    fun actualizarOrganizacion() = runBlocking {
         val org = OrganizacionEntity(
             id = 1L,
             nombre = "Empresa Vieja",
@@ -57,7 +57,7 @@ class OrganizacionRepositoryTest {
     }
 
     @Test
-    fun getAllOrganizaciones() = runBlocking {
+    fun obtenerTodasLasOrganizaciones() = runBlocking {
         val org1 = OrganizacionEntity(id = 1L, nombre = "Zeta Corp", tipoOrganizacion = "T", rubro = "R", comuna = "C", region = "R")
         val org2 = OrganizacionEntity(id = 2L, nombre = "Alpha Corp", tipoOrganizacion = "T", rubro = "R", comuna = "C", region = "R")
 
@@ -66,11 +66,11 @@ class OrganizacionRepositoryTest {
 
         val list = repository.getAllOrganizaciones().first()
         assertEquals(2, list.size)
-        assertEquals("Alpha Corp", list[0].nombre) // Debe estar ordenado por nombre ASC
+        assertEquals("Alpha Corp", list[0].nombre)
     }
 
     @Test
-    fun insertAndUpdateContacto() = runBlocking {
+    fun insertarYActualizarContacto() = runBlocking {
         val contacto = ContactoEntity(
             id = 5L,
             organizacionId = 1L,

@@ -7,7 +7,7 @@ import org.junit.Test
 class UsuarioMapperTest {
 
     @Test
-    fun testToEntity() {
+    fun convertirUsuarioDtoAEntidad() {
         val dto = UsuarioResponseDto(
             id = 100,
             email = "juan@example.com",

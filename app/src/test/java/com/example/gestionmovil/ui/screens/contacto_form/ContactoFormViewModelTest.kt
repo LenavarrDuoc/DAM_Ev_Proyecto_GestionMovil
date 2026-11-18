@@ -1,5 +1,6 @@
 package com.example.gestionmovil.ui.screens.contacto_form
 
+import androidx.lifecycle.ViewModel
 import com.example.gestionmovil.data.repository.ContactoRepository
 import com.example.gestionmovil.fakes.FakeContactoDao
 import com.example.gestionmovil.utils.TestUtils
@@ -60,16 +61,47 @@ class ContactoFormViewModelTest {
     }
 
     @Test
-    fun testSaveContacto() = runBlocking {
+    fun testFormInputs_FormInvalido() {
+        viewModel.onNombreContactoChanged("")
+        viewModel.onCargoChanged("Jefe TI")
+        viewModel.onCorreoChanged("invalido")
+        viewModel.onTelefonoChanged("123")
+
+        val state = viewModel.uiState.value
+        assertFalse(state.isFormValid)
+
+        // Al no ser válido, saveContacto no debe guardar nada
+        viewModel.saveContacto("2025-01-01")
+        assertFalse(viewModel.uiState.value.isSavedSuccess)
+        assertEquals(0, fakeDao.contactos.size)
+    }
+
+    @Test
+    fun testSaveContacto_ConOrganizacionIdNull() = runBlocking {
         viewModel.onNombreContactoChanged("Ana")
         viewModel.onCargoChanged("Analista")
         viewModel.onCorreoChanged("ana@empresa.com")
         viewModel.onTelefonoChanged("+56987654321")
+        viewModel.onOrganizacionSelected(null) // Prueba fallback 1L
 
         viewModel.saveContacto("2025-01-01")
 
         assertTrue(viewModel.uiState.value.isSavedSuccess)
         assertEquals(1, fakeDao.contactos.size)
-        assertEquals("Ana", fakeDao.contactos[0].nombre)
+        assertEquals(1L, fakeDao.contactos[0].organizacionId)
+    }
+
+    @Test
+    fun testContactoFormViewModelFactory() {
+        val factory = ContactoFormViewModelFactory(repository)
+        val created = factory.create(ContactoFormViewModel::class.java)
+        assertNotNull(created)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testContactoFormViewModelFactory_Desconocida() {
+        val factory = ContactoFormViewModelFactory(repository)
+        class DummyViewModel : ViewModel()
+        factory.create(DummyViewModel::class.java)
     }
 }

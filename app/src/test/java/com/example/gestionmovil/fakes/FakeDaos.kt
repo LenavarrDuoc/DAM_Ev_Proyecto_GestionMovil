@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
-class FakeUsuarioDao : UsuarioDao {
+open class FakeUsuarioDao : UsuarioDao {
     val usuarios = mutableListOf<UsuarioEntity>()
     private val usuariosFlow = MutableStateFlow<List<UsuarioEntity>>(emptyList())
 
@@ -50,7 +50,7 @@ class FakeUsuarioDao : UsuarioDao {
     }
 }
 
-class FakeOportunidadDao : OportunidadDao {
+open class FakeOportunidadDao : OportunidadDao {
     val oportunidades = mutableListOf<OportunidadEntity>()
     val organizaciones = mutableListOf<OrganizacionEntity>()
     private val oportunidadesFlow = MutableStateFlow<List<OportunidadEntity>>(emptyList())
@@ -110,7 +110,7 @@ class FakeOportunidadDao : OportunidadDao {
     }
 }
 
-class FakeOrganizacionDao : OrganizacionDao {
+open class FakeOrganizacionDao : OrganizacionDao {
     val organizaciones = mutableListOf<OrganizacionEntity>()
     val contactos = mutableListOf<ContactoEntity>()
     private val organizacionesFlow = MutableStateFlow<List<OrganizacionEntity>>(emptyList())
@@ -164,7 +164,7 @@ class FakeOrganizacionDao : OrganizacionDao {
     }
 }
 
-class FakeContactoDao : ContactoDao {
+open class FakeContactoDao : ContactoDao {
     val contactos = mutableListOf<ContactoEntity>()
     private val contactosFlow = MutableStateFlow<List<ContactoEntity>>(emptyList())
     private var nextId = 1L
@@ -211,7 +211,7 @@ class FakeContactoDao : ContactoDao {
     }
 }
 
-class FakeEventoDao : EventoDao {
+open class FakeEventoDao : EventoDao {
     val eventos = mutableListOf<EventoEntity>()
     private val eventosFlow = MutableStateFlow<List<EventoEntity>>(emptyList())
 
@@ -227,7 +227,7 @@ class FakeEventoDao : EventoDao {
     }
 }
 
-class FakeSeguimientoDao : SeguimientoDao {
+open class FakeSeguimientoDao : SeguimientoDao {
     val seguimientos = mutableListOf<SeguimientoEntity>()
     private val seguimientosFlow = MutableStateFlow<List<SeguimientoEntity>>(emptyList())
     private var nextId = 1L

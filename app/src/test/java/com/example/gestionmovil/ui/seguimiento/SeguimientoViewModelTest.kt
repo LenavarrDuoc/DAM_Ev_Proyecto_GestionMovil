@@ -1,5 +1,6 @@
 package com.example.gestionmovil.ui.seguimiento
 
+import androidx.lifecycle.ViewModel
 import com.example.gestionmovil.data.local.entities.SeguimientoEntity
 import com.example.gestionmovil.data.repository.SeguimientoRepository
 import com.example.gestionmovil.fakes.FakeSeguimientoDao
@@ -38,7 +39,22 @@ class SeguimientoViewModelTest {
     }
 
     @Test
-    fun testFormInputAndGuardarGestion() = runBlocking {
+    fun testCargarSeguimientosPorOportunidad() = runBlocking {
+        val seg = SeguimientoEntity(
+            id = 1L, oportunidadId = 10L, contactoId = 1L, tipoGestion = "Mail", propuesta = "P",
+            respuestaCliente = "R", proximaAccion = "A", fechaGestion = "2025-01-01", fechaProximaAccion = "2025-01-05", observacion = ""
+        )
+        fakeDao.insertarSeguimiento(seg)
+
+        viewModel.cargarSeguimientosPorOportunidad(10L)
+
+        val state = viewModel.uiState.value
+        assertEquals(10L, state.oportunidadId)
+        assertEquals(1, state.listaSeguimientos.size)
+    }
+
+    @Test
+    fun testFormInputAndGuardarGestion_Nuevo() = runBlocking {
         viewModel.onTipoGestionChanged("Llamada")
         viewModel.onPropuestaChanged("Propuesta X")
         viewModel.onRespuestaClienteChanged("Cliente interesado")
@@ -59,6 +75,43 @@ class SeguimientoViewModelTest {
         viewModel.guardarGestion()
         assertTrue(viewModel.uiState.value.guardadoExitoso)
         assertEquals(1, fakeDao.seguimientos.size)
+    }
+
+    @Test
+    fun testGuardarGestion_FechaGestionEnBlanco() = runBlocking {
+        viewModel.onTipoGestionChanged("Llamada")
+        viewModel.onFechaGestionChanged("") // Prueba el fallback ifBlank
+
+        viewModel.guardarGestion()
+        assertTrue(viewModel.uiState.value.guardadoExitoso)
+        assertEquals(1, fakeDao.seguimientos.size)
+        assertTrue(fakeDao.seguimientos[0].fechaGestion.isNotBlank())
+    }
+
+    @Test
+    fun testGuardarGestion_ActualizarExistente() = runBlocking {
+        val seg = SeguimientoEntity(
+            id = 5L, oportunidadId = 1L, contactoId = 1L, tipoGestion = "Llamada", propuesta = "P1",
+            respuestaCliente = "R1", proximaAccion = "A1", fechaGestion = "2025-01-01", fechaProximaAccion = "", observacion = ""
+        )
+        fakeDao.insertarSeguimiento(seg)
+
+        viewModel.seleccionarParaEditar(seg)
+        viewModel.onPropuestaChanged("Propuesta Modificada")
+        viewModel.guardarGestion()
+
+        assertTrue(viewModel.uiState.value.guardadoExitoso)
+        val modificado = fakeDao.obtenerSeguimientoPorId(5L)
+        assertEquals("Propuesta Modificada", modificado?.propuesta)
+    }
+
+    @Test
+    fun testGuardarGestion_SinTipoGestion() = runBlocking {
+        viewModel.onTipoGestionChanged("")
+        viewModel.guardarGestion()
+
+        assertEquals("Debes seleccionar un tipo de gestión", viewModel.uiState.value.mensajeError)
+        assertFalse(viewModel.uiState.value.guardadoExitoso)
     }
 
     @Test
@@ -98,5 +151,21 @@ class SeguimientoViewModelTest {
         assertNull(state.idSeleccionado)
         assertEquals("Llamada", state.tipoGestion)
         assertEquals("", state.propuesta)
+    }
+
+    @Test
+    fun testSeguimientoViewModelFactory() {
+        val app = TestUtils.createMockApplication()
+        val factory = SeguimientoViewModelFactory(app, repository)
+        val created = factory.create(SeguimientoViewModel::class.java)
+        assertNotNull(created)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testSeguimientoViewModelFactory_Desconocida() {
+        val app = TestUtils.createMockApplication()
+        val factory = SeguimientoViewModelFactory(app, repository)
+        class DummyViewModel : ViewModel()
+        factory.create(DummyViewModel::class.java)
     }
 }

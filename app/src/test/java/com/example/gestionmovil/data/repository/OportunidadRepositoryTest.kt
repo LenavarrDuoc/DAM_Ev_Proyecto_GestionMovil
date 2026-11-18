@@ -21,7 +21,7 @@ class OportunidadRepositoryTest {
     }
 
     @Test
-    fun insertAndGetOportunidadById() = runBlocking {
+    fun insertarYObtenerOportunidadPorId() = runBlocking {
         val op = OportunidadEntity(
             nombre = "Nueva Oportunidad",
             tipoOportunidad = "Servicio",
@@ -44,7 +44,7 @@ class OportunidadRepositoryTest {
     }
 
     @Test
-    fun updateOportunidad() = runBlocking {
+    fun actualizarOportunidad() = runBlocking {
         val op = OportunidadEntity(
             id = 1L,
             nombre = "Oportunidad Inicial",
@@ -70,7 +70,7 @@ class OportunidadRepositoryTest {
     }
 
     @Test
-    fun updateEstadoOportunidad() = runBlocking {
+    fun actualizarEstadoOportunidad() = runBlocking {
         val op = OportunidadEntity(
             id = 2L,
             nombre = "Op Estado",
@@ -95,7 +95,7 @@ class OportunidadRepositoryTest {
     }
 
     @Test
-    fun getAllOportunidades() = runBlocking {
+    fun obtenerTodasLasOportunidades() = runBlocking {
         fakeDao.insertOportunidad(
             OportunidadEntity(
                 id = 1L, nombre = "Op 1", tipoOportunidad = "T", descripcion = "D",
@@ -111,7 +111,7 @@ class OportunidadRepositoryTest {
     }
 
     @Test
-    fun getCantidadOportunidades() = runBlocking {
+    fun obtenerCantidadDeOportunidades() = runBlocking {
         assertEquals(0, repository.getCantidadOportunidades().first())
 
         fakeDao.insertOportunidad(
@@ -127,7 +127,7 @@ class OportunidadRepositoryTest {
     }
 
     @Test
-    fun getOportunidadesConOrganizacion() = runBlocking {
+    fun obtenerOportunidadesConOrganizacion() = runBlocking {
         val org = OrganizacionEntity(
             id = 10L,
             nombre = "Empresa ACME",

@@ -8,7 +8,7 @@ import org.junit.Test
 class OportunidadMapperTest {
 
     @Test
-    fun testToEntity() {
+    fun convertirRespuestaDtoAEntidad() {
         val dto = OportunidadResponseDto(
             id = 10L,
             nombre = "Venta Software",
@@ -43,7 +43,7 @@ class OportunidadMapperTest {
     }
 
     @Test
-    fun testToEntityList() {
+    fun convertirListaDtoAEntidades() {
         val dtos = listOf(
             OportunidadResponseDto(
                 id = 1L, nombre = "Op 1", tipoOportunidad = "Tipo", descripcion = "Desc",
@@ -60,7 +60,7 @@ class OportunidadMapperTest {
     }
 
     @Test
-    fun testToRequestDto() {
+    fun convertirEntidadARequestDto() {
         val entity = OportunidadEntity(
             id = 5L,
             nombre = "Op Test",
