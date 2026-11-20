@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gestionmovil.data.local.entities.UsuarioEntity
+import com.example.gestionmovil.ui.theme.AppTheme
 
 @Composable
 fun LoginScreen(
@@ -61,7 +62,7 @@ fun LoginContent(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        color = AppTheme.colors.background
     ) {
         Column(
             modifier = Modifier
@@ -73,7 +74,7 @@ fun LoginContent(
             Text(
                 text = "Gestión Móvil",
                 style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.primary
+                color = AppTheme.colors.primaryButton
             )
 
             Text(
@@ -132,7 +133,7 @@ fun LoginContent(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Botón de Iniciar Sesión / Carga
+            // Botón de Iniciar Sesión / Carga con colores personalizados desde AppTheme
             Button(
                 onClick = {
                     when {
@@ -142,13 +143,17 @@ fun LoginContent(
                     onLoginClick()
                 },
                 enabled = !uiState.isLoading,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AppTheme.colors.primaryButton,
+                    contentColor = AppTheme.colors.onPrimaryButton
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
             ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = AppTheme.colors.onPrimaryButton,
                         modifier = Modifier.size(24.dp)
                     )
                 } else {
