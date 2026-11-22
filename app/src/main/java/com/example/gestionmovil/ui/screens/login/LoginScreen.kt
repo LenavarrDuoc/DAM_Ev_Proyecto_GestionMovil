@@ -1,5 +1,8 @@
 package com.example.gestionmovil.ui.screens.login
 
+import com.example.gestionmovil.R
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -15,6 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -71,8 +77,14 @@ fun LoginContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo_gestion_movil),
+                contentDescription = "Logo Gestión Móvil",
+                modifier = Modifier.width(300.dp).height(150.dp),
+                contentScale = ContentScale.FillWidth
+            )
             Text(
-                text = "Gestión Móvil",
+                text = "Le damos la bienvenida",
                 style = MaterialTheme.typography.headlineLarge,
                 color = AppTheme.colors.primaryButton
             )
@@ -166,6 +178,42 @@ fun LoginContent(
             TextButton(onClick = onNavigateToRegister) {
                 Text("¿No tienes cuenta? Regístrate aquí")
             }
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(100.dp)
+                        .background(color = Color(0xFFFCF9F1)),
+                    contentAlignment = Alignment.BottomCenter
+
+                )
+                {
+                    Image(
+                        painter = painterResource(R.drawable.vmc_duoc),
+                        contentDescription = "Logo",
+                        modifier = Modifier.size(100.dp)
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(100.dp)
+                        .background(color = Color(0xFFF0FAFD)),
+                    contentAlignment = Alignment.BottomCenter
+                )
+                {
+                    Image(
+                        painter = painterResource(R.drawable.Logo_DuocUC),
+                        contentDescription = "Logo",
+                        modifier = Modifier.size(100.dp)
+                    )
+                }
+
+            }
+
         }
     }
 }
