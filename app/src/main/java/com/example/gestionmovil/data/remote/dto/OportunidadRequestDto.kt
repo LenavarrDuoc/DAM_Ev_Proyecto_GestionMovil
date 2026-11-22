@@ -1,5 +1,6 @@
 package com.example.gestionmovil.data.remote.dto
 
+// Equivale a OportunidadInputDTO en Spring Boot
 data class OportunidadRequestDto(
     val nombre: String,
     val tipoOportunidad: String,

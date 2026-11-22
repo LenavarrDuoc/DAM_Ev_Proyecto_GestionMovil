@@ -31,4 +31,7 @@ interface OrganizacionDao {
 
     @Query("SELECT * FROM contactos WHERE organizacionId = :orgId")
     fun getContactosByOrganizacion(orgId: Long): Flow<List<ContactoEntity>>
+
+    @Query("DELETE FROM organizaciones WHERE id = :id")
+    suspend fun deleteOrganizacionById(id: Long)
 }

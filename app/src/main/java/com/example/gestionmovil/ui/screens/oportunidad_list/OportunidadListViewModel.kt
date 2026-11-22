@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class OportunidadListViewModel(
     private val oportunidadRepository: OportunidadRepository
@@ -16,6 +17,16 @@ class OportunidadListViewModel(
     private val _searchQuery = MutableStateFlow("")
     private val _estadoFiltro = MutableStateFlow<String?>(null)
     private val _isFilterVisible = MutableStateFlow(false)
+
+    init {
+        sincronizarOportunidades()
+    }
+
+    fun sincronizarOportunidades() {
+        viewModelScope.launch {
+            oportunidadRepository.sincronizarOportunidades()
+        }
+    }
 
     val uiState: StateFlow<OportunidadListUiState> = combine(
         oportunidadRepository.getOportunidadesConOrganizacion(),
