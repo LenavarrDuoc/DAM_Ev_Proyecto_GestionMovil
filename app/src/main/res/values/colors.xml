@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Paleta Verde Esmeralda y Blanco -->
+    <color name="emerald_primary">#FF059669</color>
+    <color name="emerald_primary_dark">#FF047857</color>
+    <color name="emerald_surface">#FFFFFFFF</color>
+    <color name="emerald_background">#FFF8FAFC</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
