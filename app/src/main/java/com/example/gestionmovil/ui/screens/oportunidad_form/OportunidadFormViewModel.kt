@@ -51,9 +51,9 @@ class OportunidadFormViewModel(
     private fun validarFormulario() {
         val s = _uiState.value
         val isValid = s.nombreError == null && s.nombre.isNotBlank() &&
-                      s.descripcionError == null && s.descripcion.isNotBlank() &&
-                      s.fuenteInformacionError == null && s.fuenteInformacion.isNotBlank() &&
-                      s.responsableInternoError == null && s.responsableInterno.isNotBlank()
+                s.descripcionError == null && s.descripcion.isNotBlank() &&
+                s.fuenteInformacionError == null && s.fuenteInformacion.isNotBlank() &&
+                s.responsableInternoError == null && s.responsableInterno.isNotBlank()
 
         _uiState.update { it.copy(isFormValid = isValid) }
     }
@@ -64,20 +64,20 @@ class OportunidadFormViewModel(
         viewModelScope.launch {
             val s = _uiState.value
             val entity = OportunidadEntity(
-                nombre = s.nombre,
+                nombre = s.nombre.trim(),
                 tipoOportunidad = s.tipoOportunidad,
-                descripcion = s.descripcion,
-                fuenteInformacion = s.fuenteInformacion,
+                descripcion = s.descripcion.trim(),
+                fuenteInformacion = s.fuenteInformacion.trim(),
                 fechaDeteccion = currentDate,
-                responsableInterno = s.responsableInterno,
+                responsableInterno = s.responsableInterno.trim(),
                 prioridad = s.prioridad,
                 potencialEstimado = s.potencialEstimado,
                 estado = s.estado,
                 fechaUltimaActualizacion = currentDate,
                 organizacionId = s.organizacionIdSeleccionada,
-                observacion = s.observacion
+                observacion = s.observacion.trim()
             )
-            repository.insertOportunidad(entity)
+            repository.crearOportunidad(entity)
             _uiState.update { it.copy(isSavedSuccess = true) }
         }
     }

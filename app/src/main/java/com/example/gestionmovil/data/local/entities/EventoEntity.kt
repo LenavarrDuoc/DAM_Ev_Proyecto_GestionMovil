@@ -14,7 +14,7 @@ data class EventoEntity(
     val hora: String, // HH:mm
     val region: String,
     val comuna: String,
-    val organizacionId: String,
+    val organizacionId: Long,
     val organizacionNombre: String,
     val publicoEsperado: Int,
     val condicionesParticipacion: String,

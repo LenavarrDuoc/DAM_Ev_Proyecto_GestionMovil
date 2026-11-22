@@ -21,13 +21,24 @@ class EventoFormViewModel(
     private val _uiState = MutableStateFlow(EventoFormUiState())
     val uiState: StateFlow<EventoFormUiState> = _uiState.asStateFlow()
 
-    // Flujo con la lista de eventos guardados en Room
+    // Flujo con la lista de eventos guardados en Room (Single Source of Truth)
     val eventosList: StateFlow<List<EventoEntity>> = repository.todosLosEventos
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+
+    init {
+        // Al inicializar el ViewModel, sincronizamos los eventos desde Spring Boot hacia Room
+        sincronizarEventos()
+    }
+
+    fun sincronizarEventos() {
+        viewModelScope.launch {
+            repository.sincronizarEventos()
+        }
+    }
 
     // ─── HANDLERS DE CAMBIOS DEL FORMULARIO ─────────────────────
 
@@ -96,32 +107,47 @@ class EventoFormViewModel(
         }
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
             try {
                 // Guardamos la foto en disco y obtenemos la ruta real del archivo
                 val nombreArchivo = "foto_evento_${System.currentTimeMillis()}.jpg"
                 val rutaAbsoluta = estado.fotoEvidencia?.let { bitmap ->
-                    com.example.gestionmovil.utils.ImageUtils.guardarBitmapEnAlmacenamiento(context, bitmap, nombreArchivo)
+                    com.example.gestionmovil.utils.ImageUtils.guardarBitmapEnAlmacenamiento(
+                        context,
+                        bitmap,
+                        nombreArchivo
+                    )
                 }
 
                 val nuevoEvento = EventoEntity(
-                    titulo = estado.titulo,
+                    titulo = estado.titulo.trim(),
                     tipoEvento = estado.tipoEvento,
-                    fecha = estado.fecha,
-                    hora = estado.hora,
-                    region = estado.region,
-                    comuna = estado.comuna,
-                    organizacionId = "ORG-${System.currentTimeMillis()}",
-                    organizacionNombre = estado.organizacionNombre,
+                    fecha = estado.fecha.trim(),
+                    hora = estado.hora.trim(),
+                    region = estado.region.trim(),
+                    comuna = estado.comuna.trim(),
+                    organizacionId = 0L, // Tipo Long alineado con Spring Boot (0L cuando es ingreso manual sin FK)
+                    organizacionNombre = estado.organizacionNombre.trim(),
                     publicoEsperado = estado.publicoEsperado.toIntOrNull() ?: 0,
-                    condicionesParticipacion = estado.condicionesParticipacion,
-                    rutaFotoEvidencia = rutaAbsoluta // <-- Guardamos la ruta persistente
+                    condicionesParticipacion = estado.condicionesParticipacion.trim(),
+                    rutaFotoEvidencia = rutaAbsoluta
                 )
 
-                repository.guardarEvento(nuevoEvento)
-                _uiState.update { it.copy(isLoading = false, isEventoGuardado = true) }
-                onSuccess(nuevoEvento)
+                val resultado = repository.guardarEvento(nuevoEvento)
+
+                resultado.onSuccess { eventoGuardado ->
+                    // Limpiamos el formulario para futuros registros
+                    _uiState.value = EventoFormUiState(isEventoGuardado = true)
+                    onSuccess(eventoGuardado)
+                }.onFailure { error ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.message ?: "Error al guardar el evento"
+                        )
+                    }
+                }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
             }

@@ -154,7 +154,7 @@ abstract class AppDatabase : RoomDatabase() {
                         hora = "09:00",
                         region = "Región Metropolitana",
                         comuna = "Santiago",
-                        organizacionId = "ORG-001",
+                        organizacionId = 1L,
                         organizacionNombre = "Gobierno Regional Metropolitano",
                         publicoEsperado = 500,
                         condicionesParticipacion = "Entrada liberada previo registro en el portal corporativo."
@@ -166,7 +166,7 @@ abstract class AppDatabase : RoomDatabase() {
                         hora = "14:30",
                         region = "Valparaíso",
                         comuna = "Viña del Mar",
-                        organizacionId = "ORG-002",
+                        organizacionId = 2L,
                         organizacionNombre = "Cámara de Comercio Valparaíso",
                         publicoEsperado = 120,
                         condicionesParticipacion = "Exclusivo para ejecutivos y supervisores de área."
@@ -178,7 +178,7 @@ abstract class AppDatabase : RoomDatabase() {
                         hora = "10:00",
                         region = "Biobío",
                         comuna = "Concepción",
-                        organizacionId = "ORG-003",
+                        organizacionId = 3L,
                         organizacionNombre = "Universidad del Biobío",
                         publicoEsperado = 300,
                         condicionesParticipacion = "Presentación de credencial institucional al ingreso."

@@ -12,7 +12,7 @@ interface UsuarioDao {
     @Query("SELECT * FROM usuarios WHERE email = :email LIMIT 1")
     suspend fun obtenerPorEmail(email: String): UsuarioEntity?
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarUsuario(usuarioEntity: UsuarioEntity)
 
     @Query("SELECT * FROM usuarios WHERE id = :id LIMIT 1")

@@ -36,6 +36,7 @@ import com.example.gestionmovil.data.local.entities.UsuarioEntity
 import com.example.gestionmovil.data.repository.ContactoRepository
 import com.example.gestionmovil.data.repository.EventoRepository
 import com.example.gestionmovil.data.repository.OportunidadRepository
+import com.example.gestionmovil.data.repository.OrganizacionRepository
 import com.example.gestionmovil.data.repository.SeguimientoRepository
 import com.example.gestionmovil.ui.screens.InicioScreen
 import com.example.gestionmovil.ui.screens.InicioViewModel
@@ -120,8 +121,9 @@ fun AppNavegacion(
         composable(Rutas.Home.ruta) {
             val db = AppDatabase.getDatabase(context.applicationContext)
             val repository = OportunidadRepository(db.oportunidadDao())
+            val organizacionRepository = OrganizacionRepository(db.organizacionDao())
             val inicioViewModel: InicioViewModel = viewModel(
-                factory = InicioViewModelFactory(repository)
+                factory = InicioViewModelFactory(repository, organizacionRepository)
             )
             val cantidadOportunidades by inicioViewModel.cantidadOportunidades.collectAsState(initial = 0)
 
@@ -129,37 +131,16 @@ fun AppNavegacion(
                 navController = navController,
                 userRole = usuarioActual?.rol ?: "Cliente",
                 userName = usuarioActual?.pNombre ?: "Usuario",
-                fotoUri = usuarioActual?.fotoUri, // <-- Foto guardada en Room
+                fotoUri = usuarioActual?.fotoUri,
                 cantidadOportunidades = cantidadOportunidades,
                 onNavigateToFotoPerfil = {
-                    navController.navigate(Rutas.PerfilFoto.ruta) // <-- Redirección desde el lápiz
+                    navController.navigate(Rutas.PerfilFoto.ruta)
                 },
                 onLogout = {
                     usuarioActual = null
                     navController.navigate(Rutas.Login.ruta) {
                         popUpTo(0) { inclusive = true }
                     }
-                }
-            )
-        }
-
-        // --- MÓDULO GESTIÓN FOTO DE PERFIL ---
-        composable(Rutas.PerfilFoto.ruta) {
-            PerfilFotoScreen(
-                fotoActualUri = usuarioActual?.fotoUri,
-                onFotoGuardada = { nuevaUri ->
-                    usuarioActual?.let { usuario ->
-                        val usuarioActualizado = usuario.copy(fotoUri = nuevaUri)
-                        usuarioActual = usuarioActualizado
-
-                        // Persistencia asíncrona en Room
-                        coroutineScope.launch {
-                            database.usuarioDao().actualizarFotoPerfil(usuario.id, nuevaUri)
-                        }
-                    }
-                },
-                onNavigateBack = {
-                    navController.popBackStack()
                 }
             )
         }
@@ -345,11 +326,8 @@ fun AppNavegacion(
                 }
             )
         }
-
     }
 }
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,6 +1,12 @@
 package com.example.gestionmovil.data.remote.client
 
-import com.example.gestionmovil.data.remote.api.ApiService
+import com.example.gestionmovil.data.remote.api.AuthApiService
+import com.example.gestionmovil.data.remote.api.ContactoApiService
+import com.example.gestionmovil.data.remote.api.EventoApiService
+import com.example.gestionmovil.data.remote.api.OportunidadApiService
+import com.example.gestionmovil.data.remote.api.OrganizacionApiService
+import com.example.gestionmovil.data.remote.api.SeguimientoApiService
+import com.example.gestionmovil.data.remote.api.UsuarioApiService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -17,12 +23,39 @@ object RetrofitClient {
         .addInterceptor(loggingInterceptor)
         .build()
 
-    val apiService: ApiService by lazy {
+    // Instancia única de Retrofit
+    private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ApiService::class.java)
     }
+
+    // Exponemos las interfaces por separado
+    val authApi: AuthApiService by lazy { retrofit.create(AuthApiService::class.java) }
+    // API de Organizaciones
+    val oportunidadApi: OportunidadApiService by lazy { retrofit.create(OportunidadApiService::class.java) }
+    // API de Oportunidades
+    val organizacionApi: OrganizacionApiService by lazy {
+        retrofit.create(OrganizacionApiService::class.java)
+    }
+    // API de Contactos
+    val contactoApi: ContactoApiService by lazy {
+        retrofit.create(ContactoApiService::class.java)
+    }
+    // API de Eventos
+    val eventoApi: EventoApiService by lazy {
+        retrofit.create(EventoApiService::class.java)
+    }
+    // API de Seguimientos
+    val seguimientoApi: SeguimientoApiService by lazy {
+        retrofit.create(SeguimientoApiService::class.java)
+    }
+
+    // API de Usuarios
+    val usuarioApi: UsuarioApiService by lazy {
+        retrofit.create(UsuarioApiService::class.java)
+    }
+
 }

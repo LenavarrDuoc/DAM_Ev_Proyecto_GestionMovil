@@ -4,7 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gestionmovil.data.local.AppDatabase
-import com.example.gestionmovil.data.repository.UsuarioRepository
+import com.example.gestionmovil.data.remote.client.RetrofitClient
+import com.example.gestionmovil.data.repository.AuthRepository
 import com.example.gestionmovil.data.local.entities.UsuarioEntity
 import com.example.gestionmovil.utils.Validaciones
 import com.example.gestionmovil.utils.Validaciones.esCorreoValido
@@ -17,11 +18,16 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository: UsuarioRepository
+    // 1. Cambiamos el tipo de repositorio a AuthRepository
+    private val authRepository: AuthRepository
 
     init {
+        // 2. Obtenemos las dependencias locales y remotas
         val dao = AppDatabase.getDatabase(application).usuarioDao()
-        repository = UsuarioRepository(dao)
+        val authApi = RetrofitClient.authApi // ApiService de Retrofit
+
+        // 3. Inyectamos ambas en el repositorio híbrido
+        authRepository = AuthRepository(authApi, dao)
     }
 
     // Estado reactivo centralizado con StateFlow
@@ -80,11 +86,12 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
         if (errorFormulario != null) return
 
-        // 2. Consultar la BD local (Room)
+        // 2. Consultar el repositorio híbrido (Retrofit + Room)
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            val resultado = repository.loginUsuario(estado.email, estado.password)
+            // 3. Llamamos al método login que creamos en AuthRepository
+            val resultado = authRepository.login(estado.email, estado.password)
 
             resultado.onSuccess { usuario ->
                 limpiarEstadoCompleto()

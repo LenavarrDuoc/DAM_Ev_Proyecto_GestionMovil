@@ -3,66 +3,161 @@ package com.example.gestionmovil.data.repository
 import com.example.gestionmovil.data.local.dao.OrganizacionDao
 import com.example.gestionmovil.data.local.entities.ContactoEntity
 import com.example.gestionmovil.data.local.entities.OrganizacionEntity
+import com.example.gestionmovil.data.remote.api.ContactoApiService
+import com.example.gestionmovil.data.remote.api.OrganizacionApiService
+import com.example.gestionmovil.data.remote.client.RetrofitClient
+import com.example.gestionmovil.data.remote.mapper.toEntity
+import com.example.gestionmovil.data.remote.mapper.toEntityList
+import com.example.gestionmovil.data.remote.mapper.toRequestDto
+import com.example.gestionmovil.data.remote.mapper.toUpdateDto
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 class OrganizacionRepository(
-    private val organizacionDao: OrganizacionDao
+    private val organizacionDao: OrganizacionDao,
+    private val organizacionApi: OrganizacionApiService = RetrofitClient.organizacionApi,
+    private val contactoApi: ContactoApiService = RetrofitClient.contactoApi
 ) {
     // ==========================================
     // OPERACIONES DE ORGANIZACIONES
     // ==========================================
 
     /**
-     * Obtiene el listado de todas las organizaciones registradas.
+     * Obtiene el listado reactivo desde Room (Única fuente de verdad para la UI).
      */
     fun getAllOrganizaciones(): Flow<List<OrganizacionEntity>> {
         return organizacionDao.getAllOrganizaciones()
     }
 
     /**
-     * Busca una organización por su identificador.
+     * Descarga todas las organizaciones desde Spring Boot y actualiza Room.
+     */
+    suspend fun sincronizarOrganizaciones(): Result<List<OrganizacionEntity>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = organizacionApi.findAll()
+                if (response.isSuccessful && response.body() != null) {
+                    val entidades = response.body()!!.toEntityList()
+                    entidades.forEach { organizacionDao.insertOrganizacion(it) }
+                    Result.success(entidades)
+                } else {
+                    Result.failure(Exception("Error al sincronizar organizaciones (${response.code()})"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    /**
+     * Busca una organización por su identificador (intenta refrescar desde API, fallback a Room).
      */
     suspend fun getOrganizacionById(id: Long): OrganizacionEntity? {
-        return organizacionDao.getOrganizacionById(id)
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = organizacionApi.findById(id)
+                if (response.isSuccessful && response.body() != null) {
+                    val entidad = response.body()!!.toEntity()
+                    organizacionDao.insertOrganizacion(entidad)
+                    return@withContext entidad
+                }
+            } catch (_: Exception) {
+                // Sin red: continuamos hacia la consulta local
+            }
+            organizacionDao.getOrganizacionById(id)
+        }
     }
 
     /**
-     * Registra una nueva organización en el sistema.
-     * Retorna el ID autogenerado.
+     * Registra una nueva organización en el Backend y luego en Room con el ID oficial.
+     * Si no hay conexión, guarda localmente como respaldo.
      */
     suspend fun insertOrganizacion(organizacion: OrganizacionEntity): Long {
-        return organizacionDao.insertOrganizacion(organizacion)
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = organizacionApi.create(organizacion.toRequestDto())
+                if (response.isSuccessful && response.body() != null) {
+                    val entidadOficial = response.body()!!.toEntity()
+                    organizacionDao.insertOrganizacion(entidadOficial)
+                    return@withContext entidadOficial.id
+                }
+            } catch (_: Exception) {
+                // Fallback offline si falla la red
+            }
+            organizacionDao.insertOrganizacion(organizacion)
+        }
     }
 
     /**
-     * Modifica los antecedentes de una organización.
+     * Modifica los antecedentes de una organización en Backend y Room.
      */
     suspend fun updateOrganizacion(organizacion: OrganizacionEntity) {
-        organizacionDao.updateOrganizacion(organizacion)
+        withContext(Dispatchers.IO) {
+            try {
+                val response = organizacionApi.update(organizacion.id, organizacion.toUpdateDto())
+                if (response.isSuccessful && response.body() != null) {
+                    organizacionDao.updateOrganizacion(response.body()!!.toEntity())
+                    return@withContext
+                }
+            } catch (_: Exception) {
+                // Fallback offline
+            }
+            organizacionDao.updateOrganizacion(organizacion)
+        }
+    }
+
+    /**
+     * Elimina una organización en el Backend.
+     */
+    suspend fun deleteOrganizacion(id: Long): Result<Boolean> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = organizacionApi.delete(id)
+                if (response.isSuccessful) {
+                    organizacionDao.deleteOrganizacionById(id)
+                    Result.success(true)
+                } else {
+                    Result.failure(Exception("No se pudo eliminar la organización (${response.code()})"))
+                }
+            } catch (e: Exception) {
+                organizacionDao.deleteOrganizacionById(id)
+                Result.success(true)
+            }
+        }
     }
 
     // ==========================================
-    // OPERACIONES DE CONTACTOS CORPORATIVOS
+    // OPERACIONES DE CONTACTOS CORPORATIVOS (Compatibilidad)
     // ==========================================
 
-    /**
-     * Obtiene los contactos ficticios asociados a una organización específica.
-     */
     fun getContactsByOrganizacion(orgId: Long): Flow<List<ContactoEntity>> {
         return organizacionDao.getContactosByOrganizacion(orgId)
     }
 
-    /**
-     * Registra un nuevo contacto ficticio asociado a una organización.
-     */
     suspend fun insertContacto(contacto: ContactoEntity) {
-        organizacionDao.insertContacto(contacto)
+        withContext(Dispatchers.IO) {
+            try {
+                val response = contactoApi.create(contacto.toRequestDto())
+                if (response.isSuccessful && response.body() != null) {
+                    organizacionDao.insertContacto(response.body()!!.toEntity())
+                    return@withContext
+                }
+            } catch (_: Exception) { }
+            organizacionDao.insertContacto(contacto)
+        }
     }
 
-    /**
-     * Actualiza la información de un contacto ficticio.
-     */
     suspend fun updateContacto(contacto: ContactoEntity) {
-        organizacionDao.updateContacto(contacto)
+        withContext(Dispatchers.IO) {
+            try {
+                val response = contactoApi.update(contacto.id, contacto.toUpdateDto())
+                if (response.isSuccessful && response.body() != null) {
+                    organizacionDao.updateContacto(response.body()!!.toEntity())
+                    return@withContext
+                }
+            } catch (_: Exception) { }
+            organizacionDao.updateContacto(contacto)
+        }
     }
 }

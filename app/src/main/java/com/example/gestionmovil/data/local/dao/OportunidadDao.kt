@@ -32,4 +32,8 @@ interface OportunidadDao {
 
     @Query("SELECT COUNT(*) FROM oportunidades")
     fun getCantidadOportunidades(): Flow<Int>
+
+    @Query("DELETE FROM oportunidades WHERE id = :id")
+    suspend fun deleteOportunidadById(id: Long)
+
 }
