@@ -42,11 +42,6 @@ fun LoginScreen(
     // Recolectamos el StateFlow reactivamente de la UI
     val uiState by viewModel.uiState.collectAsState()
 
-    // Se ejecuta al cargar la pantalla o al regresar desde otra vista
-    LaunchedEffect(Unit) {
-        viewModel.limpiarEstadoCompleto()
-    }
-
     LoginContent(
         uiState = uiState,
         onEmailChange = viewModel::onEmailChange,

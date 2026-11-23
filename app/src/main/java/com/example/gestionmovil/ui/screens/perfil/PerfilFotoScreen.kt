@@ -70,12 +70,14 @@ fun PerfilFotoScreen(
     onNavigateHome: () -> Unit = {}
 ) {
     val context = LocalContext.current
-    var imagenUri by remember { mutableStateOf<Uri?>(fotoActualUri?.let { Uri.parse(it) }) }
-    var hayFoto by remember { mutableStateOf(imagenUri != null) }
+    var imagenUriString by rememberSaveable { mutableStateOf(fotoActualUri) }
+    var hayFoto by rememberSaveable { mutableStateOf(fotoActualUri != null) }
+
+    val imagenUri = remember(imagenUriString) { imagenUriString?.let { Uri.parse(it) } }
 
     // Sincroniza estado cuando cambia la uri
-    LaunchedEffect(imagenUri) {
-        if (imagenUri != null) {
+    LaunchedEffect(imagenUriString) {
+        if (imagenUriString != null) {
             hayFoto = true
         }
     }
@@ -87,7 +89,7 @@ fun PerfilFotoScreen(
     // Launcher para Galería
     val selectorFotos = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
-            imagenUri = uri
+            imagenUriString = uri.toString()
             hayFoto = true
         }
     }
@@ -98,7 +100,7 @@ fun PerfilFotoScreen(
         contract = ActivityResultContracts.TakePicture()
     ) { exito ->
         if (exito && uriPendiente != null) {
-            imagenUri = uriPendiente
+            imagenUriString = uriPendiente.toString()
             hayFoto = true
         } else {
             uriPendiente = null
@@ -247,7 +249,7 @@ fun PerfilFotoScreen(
                                 hayFoto = false
                                 delay(timeEffect.milliseconds)
                                 if (!hayFoto) {
-                                    imagenUri = null
+                                    imagenUriString = null
                                     onFotoGuardada(null)
                                 }
                             }
