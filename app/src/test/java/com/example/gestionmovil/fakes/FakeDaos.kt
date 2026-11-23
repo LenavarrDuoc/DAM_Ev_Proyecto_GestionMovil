@@ -108,6 +108,11 @@ open class FakeOportunidadDao : OportunidadDao {
     override fun getCantidadOportunidades(): Flow<Int> {
         return oportunidadesFlow.map { it.size }
     }
+
+    override suspend fun deleteOportunidadById(id: Long) {
+        oportunidades.removeAll { it.id == id }
+        notifyChanges()
+    }
 }
 
 open class FakeOrganizacionDao : OrganizacionDao {
@@ -161,6 +166,11 @@ open class FakeOrganizacionDao : OrganizacionDao {
 
     override fun getContactosByOrganizacion(orgId: Long): Flow<List<ContactoEntity>> {
         return contactosFlow.map { list -> list.filter { it.organizacionId == orgId } }
+    }
+
+    override suspend fun deleteOrganizacionById(id: Long) {
+        organizaciones.removeAll { it.id == id }
+        notifyOrgChanges()
     }
 }
 
@@ -224,6 +234,11 @@ open class FakeEventoDao : EventoDao {
 
     override fun obtenerTodosLosEventos(): Flow<List<EventoEntity>> {
         return eventosFlow.map { list -> list.sortedByDescending { it.fecha } }
+    }
+
+    override suspend fun eliminarEventoPorId(id: String) {
+        eventos.removeAll { it.id == id }
+        notifyChanges()
     }
 }
 

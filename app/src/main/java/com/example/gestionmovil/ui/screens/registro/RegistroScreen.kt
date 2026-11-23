@@ -1,4 +1,4 @@
-package com.example.gestionmovil.ui.theme.Registro
+package com.example.gestionmovil.ui.screens.registro
 
 import android.app.DatePickerDialog
 import androidx.compose.foundation.clickable

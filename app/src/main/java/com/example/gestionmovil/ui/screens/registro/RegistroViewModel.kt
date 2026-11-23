@@ -1,4 +1,4 @@
-package com.example.gestionmovil.ui.theme.Registro
+package com.example.gestionmovil.ui.screens.registro
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.gestionmovil.data.local.AppDatabase
 import com.example.gestionmovil.data.repository.UsuarioRepository
 import com.example.gestionmovil.data.local.entities.UsuarioEntity
-import com.example.gestionmovil.ui.screens.registro.RegistroUiState
 import com.example.gestionmovil.utils.ValidacionesRegistro
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -29,7 +29,7 @@ class EventoRepositoryTest {
             hora = "10:00",
             region = "Metropolitana",
             comuna = "Santiago",
-            organizacionId = "ORG-1",
+            organizacionId = 1L,
             organizacionNombre = "Tech Corp",
             publicoEsperado = 100,
             condicionesParticipacion = "Presencial",
