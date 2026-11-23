@@ -28,6 +28,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -44,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gestionmovil.data.local.entities.SeguimientoEntity
+import com.example.gestionmovil.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,7 +67,9 @@ fun SeguimientoScreen(
             TopAppBar(
                 title = { Text("Seguimiento Comercial") },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = AppTheme.colors.topBarBackground,
+                    titleContentColor = AppTheme.colors.topBarContent,
+                    actionIconContentColor = AppTheme.colors.topBarContent
                 ),
                 navigationIcon = {
                     // BOTÓN ATRÁS
@@ -89,6 +93,7 @@ fun SeguimientoScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
+                containerColor = AppTheme.colors.floatingActionButton,
                 onClick = {
                     viewModel.limpiarFormulario()
                     mostrarBottomSheet = true
@@ -234,35 +239,80 @@ fun FormularioSeguimientoContent(
             value = uiState.tipoGestion,
             onValueChange = { viewModel.onTipoGestionChanged(it) },
             label = { Text("Tipo de Gestión (Llamada, Correo...)") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+
+                focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+
+                cursorColor = AppTheme.colors.textFieldCursor
+            )
         )
 
         OutlinedTextField(
             value = uiState.propuesta,
             onValueChange = { viewModel.onPropuestaChanged(it) },
             label = { Text("Propuesta Presentada") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+
+                focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+
+                cursorColor = AppTheme.colors.textFieldCursor
+            )
         )
 
         OutlinedTextField(
             value = uiState.respuestaCliente,
             onValueChange = { viewModel.onRespuestaClienteChanged(it) },
             label = { Text("Respuesta del Cliente") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+
+                focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+
+                cursorColor = AppTheme.colors.textFieldCursor
+            )
         )
 
         OutlinedTextField(
             value = uiState.proximaAccion,
             onValueChange = { viewModel.onProximaAccionChanged(it) },
             label = { Text("Próxima Acción / Compromiso") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+
+                focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+
+                cursorColor = AppTheme.colors.textFieldCursor
+            )
         )
 
         OutlinedTextField(
             value = uiState.fechaProximaAccion,
             onValueChange = { viewModel.onFechaProximaAccionChanged(it) },
             label = { Text("Fecha Próxima Acción (AAAA-MM-DD)") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+
+                focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+
+                cursorColor = AppTheme.colors.textFieldCursor
+            )
         )
 
         Button(
@@ -284,7 +334,9 @@ fun SeguimientoTopBarPreview() {
         TopAppBar(
             title = { Text("Seguimiento Comercial") },
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
+                containerColor = AppTheme.colors.topBarBackground,
+                titleContentColor = AppTheme.colors.topBarContent,
+                actionIconContentColor = AppTheme.colors.topBarContent
             ),
             navigationIcon = {
                 IconButton(onClick = {}) {

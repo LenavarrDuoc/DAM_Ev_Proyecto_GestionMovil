@@ -29,6 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gestionmovil.data.local.entities.UsuarioEntity
 import com.example.gestionmovil.ui.theme.AppTheme
+import com.example.gestionmovil.ui.theme.GestionMovilGreen
+import com.example.gestionmovil.ui.theme.GestionMovilPurple
+import com.example.gestionmovil.ui.theme.GestionMovilTheme
 
 @Composable
 fun LoginScreen(
@@ -80,7 +83,7 @@ fun LoginContent(
             Image(
                 painter = painterResource(id = R.drawable.logo_gestion_movil),
                 contentDescription = "Logo Gestión Móvil",
-                modifier = Modifier.width(300.dp).height(150.dp),
+                modifier = Modifier.fillMaxWidth(0.8f).height(140.dp),
                 contentScale = ContentScale.FillWidth
             )
             Text(
@@ -92,7 +95,7 @@ fun LoginContent(
             Text(
                 text = "Inicia sesión para continuar",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = AppTheme.colors.textSecondary,
                 modifier = Modifier.padding(bottom = 32.dp)
             )
 
@@ -106,7 +109,16 @@ fun LoginContent(
                 isError = uiState.errorCorreo,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(emailFocusRequester)
+                    .focusRequester(emailFocusRequester),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                    unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+
+                    focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                    unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+
+                    cursorColor = AppTheme.colors.textFieldCursor
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -128,7 +140,14 @@ fun LoginContent(
                 isError = uiState.errorPassword,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(passwordFocusRequester)
+                    .focusRequester(passwordFocusRequester),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                    unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+                    focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                    unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+                    cursorColor = AppTheme.colors.textFieldCursor
+                )
             )
 
             // Feedback de Error
@@ -175,7 +194,9 @@ fun LoginContent(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            TextButton(onClick = onNavigateToRegister) {
+            TextButton(
+                onClick = onNavigateToRegister
+            ){
                 Text("¿No tienes cuenta? Regístrate aquí")
             }
             Row(
@@ -186,7 +207,7 @@ fun LoginContent(
                         .weight(1f)
                         .height(100.dp)
                         .background(color = Color(0xFFFCF9F1)),
-                    contentAlignment = Alignment.BottomCenter
+                    contentAlignment = Alignment.Center
 
                 )
                 {
@@ -202,11 +223,11 @@ fun LoginContent(
                         .weight(1f)
                         .height(100.dp)
                         .background(color = Color(0xFFF0FAFD)),
-                    contentAlignment = Alignment.BottomCenter
+                    contentAlignment = Alignment.Center
                 )
                 {
                     Image(
-                        painter = painterResource(R.drawable.Logo_DuocUC),
+                        painter = painterResource(R.drawable.logo_duocuc),
                         contentDescription = "Logo",
                         modifier = Modifier.size(100.dp)
                     )
@@ -221,7 +242,7 @@ fun LoginContent(
 @Preview(showBackground = true)
 @Composable
 fun LoginSreenPreview() {
-    MaterialTheme {
+    GestionMovilTheme {
         LoginContent(
             uiState = LoginUiState(
                 email = "usuario@correo.com",

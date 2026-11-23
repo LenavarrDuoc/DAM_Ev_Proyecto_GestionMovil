@@ -20,53 +20,145 @@ import androidx.compose.ui.platform.LocalContext
  * sin depender exclusivamente de los valores por defecto de Material.
  */
 data class AppColors(
-    val background: Color,          // [FONDO] Color general del fondo de las pantallas (Scaffold / Surface principal)
-    val surface: Color,             // [SUPERFICIE] Color base para contenedores, hojas modales y diálogos
-    val primaryButton: Color,       // [BOTÓN PRINCIPAL] Color de fondo de los botones de acción principal (Ej: Iniciar Sesión, Guardar)
-    val onPrimaryButton: Color,     // [TEXTO BOTÓN PRINCIPAL] Color del texto e iconos sobre los botones principales
-    val secondaryButton: Color,     // [BOTÓN SECUNDARIO] Color de fondo para botones secundarios o de contorno
-    val onSecondaryButton: Color,   // [TEXTO BOTÓN SECUNDARIO] Color del texto sobre los botones secundarios
-    val topBarBackground: Color,    // [BARRA SUPERIOR] Color de fondo de la barra de navegación superior (TopAppBar)
-    val topBarContent: Color,       // [CONTENIDO BARRA SUPERIOR] Color de los títulos, íconos y botones en la TopAppBar
-    val bottomBarBackground: Color, // [BARRA INFERIOR] Color de fondo de la barra de navegación inferior (BottomBar / NavigationBar)
-    val bottomBarContent: Color,    // [CONTENIDO BARRA INFERIOR] Color de los íconos y etiquetas en la barra inferior
-    val cardBackground: Color,      // [TARJETAS / CARDS] Color de fondo específico para tarjetas y elementos agrupados en listas
-    val textPrimary: Color,         // [TEXTO PRINCIPAL] Color para títulos, encabezados y texto de alta visibilidad
-    val textSecondary: Color,       // [TEXTO SECUNDARIO] Color para subtítulos, etiquetas y texto de menor jerarquía
-    val isDark: Boolean             // [ESTADO TEMA] Indica si el esquema activo corresponde al modo oscuro
+    val background: Color,              // [FONDO] Color general del fondo de las pantallas (Scaffold / Surface principal)
+    val surface: Color,                 // [SUPERFICIE] Color base para contenedores, hojas modales y diálogos
+
+    val primaryButton: Color,           // [BOTÓN PRINCIPAL] Color de fondo de los botones de acción principal (Ej: Iniciar Sesión, Guardar)
+    val onPrimaryButton: Color,         // [TEXTO BOTÓN PRINCIPAL] Color del texto e iconos sobre los botones principales
+
+    val secondaryButton: Color,         // [BOTÓN SECUNDARIO] Color de fondo para botones secundarios o de contorno
+    val onSecondaryButton: Color,       // [TEXTO BOTÓN SECUNDARIO] Color del texto sobre los botones secundarios
+
+    val dangerButton: Color,            // [BOTÓN DE PELIGRO] Color de fondo para acciones críticas (Cerrar Sesión, Eliminar, Descartar)
+    val onDangerButton: Color,          // [TEXTO BOTÓN DE PELIGRO] Color del texto e iconos sobre botones críticos
+
+    val topBarBackground: Color,        // [BARRA SUPERIOR] Color de fondo de la barra de navegación superior (TopAppBar)
+    val topBarContent: Color,           // [CONTENIDO BARRA SUPERIOR] Color de los títulos, íconos y botones en la TopAppBar
+
+    val bottomBarBackground: Color,     // [BARRA INFERIOR] Color de fondo de la barra de navegación inferior (BottomBar / NavigationBar)
+    val bottomBarContent: Color,        // [CONTENIDO BARRA INFERIOR] Color de los íconos y etiquetas en la barra inferior
+
+    val cardBackground: Color,          // [TARJETAS] Color de fondo estándar para tarjetas y agrupadores de contenido
+    val highlightedCard: Color,         // [TARJETA DESTACADA] Color de fondo para tarjetas con énfasis visual (Bienvenida, KPIs destacados)
+    val onHighlightedCard: Color,       // [CONTENIDO TARJETA DESTACADA] Color del texto e iconos sobre tarjetas destacadas
+
+    val textPrimary: Color,             // [TEXTO PRINCIPAL] Color para títulos, encabezados y texto de alta visibilidad
+    val textSecondary: Color,           // [TEXTO SECUNDARIO] Color para subtítulos, etiquetas y texto de menor jerarquía
+
+    val textFieldBorderFocused: Color,  // [TEXTFIELD BORDE ACTIVO] Color del borde al tomar foco
+    val textFieldBorderUnfocused: Color,// [TEXTFIELD BORDE INACTIVO] Color del borde sin foco
+
+    val textFieldLabelFocused: Color,   // [TEXTFIELD ETIQUETA ACTIVA] Color de la etiqueta al tomar foco
+    val textFieldLabelUnfocused: Color, // [TEXTFIELD ETIQUETA INACTIVA] Color de la etiqueta sin foco
+
+    val textFieldCursor: Color,         // [TEXTFIELD CURSOR] Color del cursor de escritura
+
+    val chipBackground: Color,          // [CHIPS] Color de fondo para FilterChip y SuggestionChip
+    val chipContent: Color,             // [CONTENIDO CHIPS] Color del texto e iconos de FilterChip y SuggestionChip
+
+    val floatingActionButton: Color,    // [BOTÓN FLOTANTE] Color de fondo para FloatingActionButton (FAB)
+    val onFloatingActionButton: Color,  // [CONTENIDO BOTÓN FLOTANTE] Color de iconos sobre FAB
+
+    val error: Color,                   // [MENSAJE ERROR]
+    val success: Color,                 // [MENSAJE ÉXITO]
+    val warning: Color,                 // [MENSAJE ADVERTENCIA]
+
+    val isDark: Boolean                 // [ESTADO TEMA] Indica si el esquema activo corresponde al modo oscuro
 )
 
 val LightAppColors = AppColors(
-    background = EmeraldBackground,
-    surface = EmeraldSurface,
-    primaryButton = EmeraldPrimary,
+    background = GestionMovilBackground,
+    surface = GestionMovilSurface,
+
+    primaryButton = GestionMovilGreen,
     onPrimaryButton = Color.White,
-    secondaryButton = Color(0xFFE2E8F0),
-    onSecondaryButton = EmeraldTextPrimary,
-    topBarBackground = EmeraldPrimary,
+
+    secondaryButton = GestionMovilPurpleLight,
+    onSecondaryButton = GestionMovilPurple,
+
+    dangerButton = ErrorColor,
+    onDangerButton = Color.White,
+
+    topBarBackground = GestionMovilGreen,
     topBarContent = Color.White,
-    bottomBarBackground = EmeraldSurface,
-    bottomBarContent = EmeraldPrimary,
-    cardBackground = EmeraldCardBg,
-    textPrimary = EmeraldTextPrimary,
-    textSecondary = EmeraldTextSecondary,
+
+    bottomBarBackground = Color.White,
+    bottomBarContent = GestionMovilGreen,
+
+    cardBackground = Color.White,
+
+    highlightedCard = GestionMovilPurpleLight,
+    onHighlightedCard = GestionMovilTextPrimary,
+
+    textPrimary = GestionMovilTextPrimary,
+    textSecondary = GestionMovilTextSecondary,
+
+    textFieldBorderFocused = GestionMovilGreen,
+    textFieldBorderUnfocused = GestionMovilTextSecondary,
+
+    textFieldLabelFocused = GestionMovilPurple,
+    textFieldLabelUnfocused = GestionMovilTextSecondary,
+
+    textFieldCursor = GestionMovilGreen,
+
+    chipBackground = GestionMovilPurpleLight,
+    chipContent = GestionMovilPurple,
+
+    floatingActionButton = GestionMovilGreen,
+    onFloatingActionButton = Color.White,
+
+    error = ErrorColor,
+    success = SuccessColor,
+    warning = WarningColor,
+
     isDark = false
 )
 
 val DarkAppColors = AppColors(
     background = DarkBackground,
     surface = DarkSurface,
+
     primaryButton = DarkPrimary,
-    onPrimaryButton = Color(0xFF0F172A),
-    secondaryButton = Color(0xFF1E293B),
-    onSecondaryButton = DarkTextPrimary,
-    topBarBackground = DarkSurface,
+    onPrimaryButton = Color.White,
+
+    secondaryButton = GestionMovilPurple,
+    onSecondaryButton = Color.White,
+
+    dangerButton = ErrorColor,
+    onDangerButton = Color.White,
+
+    topBarBackground = GestionMovilPurpleDark,
     topBarContent = DarkTextPrimary,
+
     bottomBarBackground = DarkSurface,
     bottomBarContent = DarkPrimary,
+
     cardBackground = DarkSurface,
+
+    highlightedCard = GestionMovilPurpleDark,
+    onHighlightedCard = DarkTextPrimary,
+
     textPrimary = DarkTextPrimary,
     textSecondary = DarkTextSecondary,
+
+    textFieldBorderFocused = GestionMovilGreen,
+    textFieldBorderUnfocused = DarkTextSecondary,
+
+    textFieldLabelFocused = GestionMovilPurple,
+    textFieldLabelUnfocused = DarkTextSecondary,
+
+    textFieldCursor = GestionMovilGreen,
+
+    chipBackground = GestionMovilPurpleDark,
+    chipContent = DarkTextPrimary,
+
+    floatingActionButton = DarkPrimary,
+    onFloatingActionButton = Color.White,
+
+    error = ErrorColor,
+    success = SuccessColor,
+    warning = WarningColor,
+
     isDark = true
 )
 
@@ -78,29 +170,37 @@ object AppTheme {
         get() = LocalAppColors.current
 }
 
+private val LightColorScheme = lightColorScheme(
+    primary = GestionMovilGreen,
+    secondary = GestionMovilPurple,
+    tertiary = GestionMovilPurpleLight,
+
+    background = GestionMovilBackground,
+    surface = GestionMovilSurface,
+
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+
+    onBackground = GestionMovilTextPrimary,
+    onSurface = GestionMovilTextPrimary
+)
+
 private val DarkColorScheme = darkColorScheme(
     primary = DarkPrimary,
-    secondary = EmeraldSecondary,
-    tertiary = EmeraldPrimaryLight,
+    secondary = GestionMovilPurple,
+    tertiary = GestionMovilPurple,
+
     background = DarkBackground,
     surface = DarkSurface,
-    onPrimary = Color(0xFF0F172A),
+
+    onPrimary = Color.White,
     onSecondary = Color.White,
+
     onBackground = DarkTextPrimary,
     onSurface = DarkTextPrimary
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = EmeraldPrimary,
-    secondary = EmeraldSecondary,
-    tertiary = EmeraldPrimaryDark,
-    background = EmeraldBackground,
-    surface = EmeraldSurface,
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onBackground = EmeraldTextPrimary,
-    onSurface = EmeraldTextPrimary
-)
+
 
 @Composable
 fun GestionMovilTheme(

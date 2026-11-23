@@ -28,9 +28,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,8 +41,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.gestionmovil.ui.components.CustomOutlinedTextField
+import com.example.gestionmovil.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,6 +65,11 @@ fun OportunidadFormScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Nueva Oportunidad") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppTheme.colors.topBarBackground,
+                    titleContentColor = AppTheme.colors.topBarContent,
+                    actionIconContentColor = AppTheme.colors.topBarContent
+                ),
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
@@ -202,7 +211,14 @@ fun DropdownSelector(
                     type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
                     enabled = true
                 )
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+                focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+                cursorColor = AppTheme.colors.textFieldCursor
+            )
         )
         ExposedDropdownMenu(
             expanded = expanded,

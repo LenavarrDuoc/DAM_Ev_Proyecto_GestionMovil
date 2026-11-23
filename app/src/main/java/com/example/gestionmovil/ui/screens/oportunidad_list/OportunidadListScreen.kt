@@ -36,15 +36,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -52,6 +55,8 @@ import com.example.gestionmovil.data.local.entities.OportunidadConOrganizacion
 import com.example.gestionmovil.data.local.entities.OportunidadEntity
 import com.example.gestionmovil.data.local.entities.OrganizacionEntity
 import com.example.gestionmovil.navigation.Rutas
+import com.example.gestionmovil.ui.theme.AppTheme
+import com.example.gestionmovil.ui.theme.GestionMovilTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,6 +70,11 @@ fun OportunidadListScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Listado de Oportunidades") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppTheme.colors.topBarBackground,
+                    titleContentColor = AppTheme.colors.topBarContent,
+                    actionIconContentColor = AppTheme.colors.topBarContent
+                ),
                 navigationIcon = {
                     // BOTÓN ATRÁS -> Regresa al menú / pantalla anterior
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -98,6 +108,7 @@ fun OportunidadListScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
+                containerColor = AppTheme.colors.floatingActionButton,
                 onClick = { navController.navigate(Rutas.OportunidadForm.ruta) }
             ) {
                 Icon(
@@ -131,6 +142,16 @@ fun OportunidadListScreen(
                         }
                     }
                 },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                    unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+                    focusedTextColor = AppTheme.colors.textPrimary,
+                    unfocusedTextColor = AppTheme.colors.textSecondary,
+                    focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                    unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+
+                    cursorColor = AppTheme.colors.textFieldCursor
+                ),
                 singleLine = true
             )
 
@@ -236,7 +257,7 @@ fun OportunidadCard(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = AppTheme.colors.highlightedCard
         )
     ) {
         Column(
@@ -249,12 +270,14 @@ fun OportunidadCard(
             ) {
                 Text(
                     text = item.oportunidad.nombre,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+
                 )
                 Text(
                     text = item.oportunidad.potencialEstimado,
                     style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
 
@@ -290,7 +313,7 @@ fun OportunidadCard(
 @Preview(showBackground = true, name = "Barra Superior (TopAppBar)")
 @Composable
 fun OportunidadListTopBarPreview() {
-    MaterialTheme {
+    GestionMovilTheme {
         TopAppBar(
             title = { Text("Listado de Oportunidades") },
             navigationIcon = {
@@ -325,13 +348,13 @@ fun OportunidadListTopBarPreview() {
 @Preview(showBackground = true, name = "Tarjeta Oportunidad")
 @Composable
 fun OportunidadCardItemPreview() {
-    MaterialTheme {
+    GestionMovilTheme {
         Box(modifier = Modifier.padding(16.dp)) {
             Card(
                 onClick = {},
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    containerColor = AppTheme.colors.highlightedCard
                 )
             ) {
                 Column(
@@ -344,12 +367,13 @@ fun OportunidadCardItemPreview() {
                     ) {
                         Text(
                             text = "Licitación Red de Fibra Óptica",
-                            style = MaterialTheme.typography.titleMedium
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             text = "Medio",
                             style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
 

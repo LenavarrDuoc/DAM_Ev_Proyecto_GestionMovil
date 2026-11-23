@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,6 +46,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,14 +55,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage // Import de Coil 2
+import com.example.gestionmovil.R
 import com.example.gestionmovil.navigation.Rutas
+import com.example.gestionmovil.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,6 +86,11 @@ fun InicioScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Gestión Móvil - Inicio") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppTheme.colors.topBarBackground,
+                    titleContentColor = AppTheme.colors.topBarContent,
+                    actionIconContentColor = AppTheme.colors.topBarContent
+                ),
                 actions = {
                     IconButton(onClick = { navController.navigate(Rutas.Alertas.ruta) }) {
                         Icon(Icons.Default.Notifications, contentDescription = "Alertas")
@@ -94,7 +105,8 @@ fun InicioScreen(
                 .padding(paddingValues)
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Tarjeta de Bienvenida Personalizada con Foto/Avatar
             Card(
@@ -224,6 +236,13 @@ fun InicioScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Cerrar Sesión")
             }
+            Image(
+                painter = painterResource(id = R.drawable.logo_gestion_movil),
+                contentDescription = "Logo Gestión Móvil",
+                modifier = Modifier.size(200.dp),
+                contentScale = ContentScale.FillWidth
+            )
+
         }
     }
 

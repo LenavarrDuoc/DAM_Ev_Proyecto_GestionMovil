@@ -22,6 +22,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -48,6 +49,10 @@ fun EventoDetailScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Detalle del Evento") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF009688),
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White),
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(

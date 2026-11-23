@@ -41,9 +41,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -52,10 +54,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.gestionmovil.ui.theme.AppTheme
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,6 +88,11 @@ fun EventoFormScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Registrar Nuevo Evento") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppTheme.colors.topBarBackground,
+                    titleContentColor = AppTheme.colors.topBarContent,
+                    actionIconContentColor = AppTheme.colors.topBarContent
+                ),
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
@@ -106,7 +115,14 @@ fun EventoFormScreen(
                 onValueChange = { viewModel.onTituloChange(it) },
                 label = { Text("Título / Nombre del Evento *") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                    unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+                    focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                    unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+                    cursorColor = AppTheme.colors.textFieldCursor
+                )
             )
 
             // Tipo de Evento Dropdown
@@ -120,7 +136,14 @@ fun EventoFormScreen(
                     readOnly = true,
                     label = { Text("Tipo de Evento") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTipo) },
-                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                    modifier = Modifier.menuAnchor().fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                        unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+                        focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                        unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+                        cursorColor = AppTheme.colors.textFieldCursor
+                    )
                 )
                 ExposedDropdownMenu(
                     expanded = expandedTipo,
@@ -144,13 +167,27 @@ fun EventoFormScreen(
                     value = uiState.fecha,
                     onValueChange = { viewModel.onFechaChange(it) },
                     label = { Text("Fecha (AAAA-MM-DD)") },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                        unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+                        focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                        unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+                        cursorColor = AppTheme.colors.textFieldCursor
+                    )
                 )
                 OutlinedTextField(
                     value = uiState.hora,
                     onValueChange = { viewModel.onHoraChange(it) },
                     label = { Text("Horario (HH:mm)") },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                        unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+                        focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                        unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+                        cursorColor = AppTheme.colors.textFieldCursor
+                    )
                 )
             }
 
@@ -160,13 +197,27 @@ fun EventoFormScreen(
                     value = uiState.region,
                     onValueChange = { viewModel.onRegionChange(it) },
                     label = { Text("Región") },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                        unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+                        focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                        unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+                        cursorColor = AppTheme.colors.textFieldCursor
+                    )
                 )
                 OutlinedTextField(
                     value = uiState.comuna,
                     onValueChange = { viewModel.onComunaChange(it) },
                     label = { Text("Comuna") },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                        unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+                        focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                        unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+                        cursorColor = AppTheme.colors.textFieldCursor
+                    )
                 )
             }
 
@@ -176,6 +227,13 @@ fun EventoFormScreen(
                 onValueChange = { viewModel.onOrganizacionChange(it) },
                 label = { Text("Organización Asociada *") },
                 modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                    unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+                    focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                    unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+                    cursorColor = AppTheme.colors.textFieldCursor
+                ),
                 singleLine = true
             )
 
@@ -185,7 +243,14 @@ fun EventoFormScreen(
                 onValueChange = { viewModel.onPublicoEsperadoChange(it) },
                 label = { Text("Público Esperado (N° Asistentes)") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                    unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+                    focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                    unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+                    cursorColor = AppTheme.colors.textFieldCursor
+                )
             )
 
             // Condiciones
@@ -194,7 +259,14 @@ fun EventoFormScreen(
                 onValueChange = { viewModel.onCondicionesChange(it) },
                 label = { Text("Condiciones de Participación") },
                 modifier = Modifier.fillMaxWidth(),
-                minLines = 2
+                minLines = 2,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                    unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+                    focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                    unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+                    cursorColor = AppTheme.colors.textFieldCursor
+                )
             )
 
             HorizontalDivider()
