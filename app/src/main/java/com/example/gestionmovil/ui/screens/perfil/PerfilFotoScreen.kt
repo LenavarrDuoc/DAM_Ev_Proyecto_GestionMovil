@@ -40,6 +40,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -56,6 +57,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.gestionmovil.ui.theme.AppTheme
 import com.example.gestionmovil.utils.CamaraUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -123,6 +125,11 @@ fun PerfilFotoScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Fotografía de Perfil") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppTheme.colors.topBarBackground,
+                    titleContentColor = AppTheme.colors.topBarContent,
+                    actionIconContentColor = AppTheme.colors.topBarContent
+                ),
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
