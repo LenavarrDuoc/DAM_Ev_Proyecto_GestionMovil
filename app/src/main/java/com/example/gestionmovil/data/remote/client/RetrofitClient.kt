@@ -13,8 +13,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "http://10.0.2.2:8080/" // Ajustar según entorno
+    // Para conexión con la API REST, debe elegirse entre estas opciones. Dejar comentada la no utilizada.
+    // Opción 1: La regular. Pero puede que el puerto 8080 esté restringido por Firewall de Windows u otro.
+    //private const val BASE_URL = "http://10.0.2.2:8080/" // Ajustar según entorno
 
+    // Opción 2: en caso de restricción de puerto 8080. Aplicar junto a comando de reverse.
+    private const val BASE_URL = "http://localhost:8080/"
+    // Si se ocupa opción 2, aplicar comando:
+    // adb reverse tcp:8080 tcp:8080
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
