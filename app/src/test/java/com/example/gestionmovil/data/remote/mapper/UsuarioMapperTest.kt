@@ -9,11 +9,15 @@ class UsuarioMapperTest {
     @Test
     fun convertirUsuarioDtoAEntidad() {
         val dto = UsuarioResponseDto(
-            id = 100,
+            id = "100",
+            pNombre = "Juan",
+            sNombre = "Carlos",
+            pApellido = "Pérez",
+            sApellido = "Gómez",
+            fecNac = 800000000000L,
             email = "juan@example.com",
-            primerNombre = "Juan",
             rol = "EJECUTIVO",
-            token = "jwt-token-123"
+            fotoUri = "file:///foto.jpg"
         )
 
         val entity = dto.toEntity()
@@ -22,5 +26,6 @@ class UsuarioMapperTest {
         assertEquals("Juan", entity.pNombre)
         assertEquals("juan@example.com", entity.email)
         assertEquals("EJECUTIVO", entity.rol)
+        assertEquals("file:///foto.jpg", entity.fotoUri)
     }
 }

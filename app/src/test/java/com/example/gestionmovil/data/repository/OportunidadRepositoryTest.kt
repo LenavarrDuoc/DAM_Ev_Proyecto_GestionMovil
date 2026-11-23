@@ -36,7 +36,8 @@ class OportunidadRepositoryTest {
             organizacionId = 1L
         )
 
-        val id = repository.insertOportunidad(op)
+        val result = repository.crearOportunidad(op)
+        val id = result.getOrNull()?.id ?: 0L
 
         val retrieved = repository.getOportunidadById(id)
         assertNotNull(retrieved)
