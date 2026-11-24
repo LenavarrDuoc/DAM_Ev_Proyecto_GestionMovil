@@ -1,6 +1,9 @@
 package com.example.gestionmovil.ui.screens.oportunidad_form
 
 data class OportunidadFormUiState(
+    val id: Long = 0L,
+    val isEditing: Boolean = false,
+
     val nombre: String = "",
     val nombreError: String? = null,
 

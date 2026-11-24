@@ -228,12 +228,17 @@ open class FakeEventoDao : EventoDao {
     private fun notifyChanges() { eventosFlow.value = eventos.toList() }
 
     override suspend fun insertarEvento(evento: EventoEntity) {
+        eventos.removeAll { it.id == evento.id }
         eventos.add(evento)
         notifyChanges()
     }
 
     override fun obtenerTodosLosEventos(): Flow<List<EventoEntity>> {
         return eventosFlow.map { list -> list.sortedByDescending { it.fecha } }
+    }
+
+    override suspend fun obtenerEventoPorId(id: String): EventoEntity? {
+        return eventos.find { it.id == id }
     }
 
     override suspend fun eliminarEventoPorId(id: String) {

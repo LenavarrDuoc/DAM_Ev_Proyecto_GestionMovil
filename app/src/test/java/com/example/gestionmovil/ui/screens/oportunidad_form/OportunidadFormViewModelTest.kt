@@ -84,6 +84,46 @@ class OportunidadFormViewModelTest {
     }
 
     @Test
+    fun testCargarOportunidadParaEditarYActualizar() = runBlocking {
+        val op = com.example.gestionmovil.data.local.entities.OportunidadEntity(
+            id = 50L,
+            nombre = "Oportunidad Original",
+            tipoOportunidad = "Servicio",
+            descripcion = "Desc original",
+            fuenteInformacion = "Contacto directo",
+            fechaDeteccion = "2025-01-01",
+            responsableInterno = "Carlos",
+            prioridad = "Media",
+            potencialEstimado = "Medio",
+            estado = "Evento identificado",
+            fechaUltimaActualizacion = "2025-01-01",
+            organizacionId = 2L
+        )
+        fakeDao.insertOportunidad(op)
+
+        viewModel.cargarOportunidadParaEditar(50L)
+        kotlinx.coroutines.delay(100)
+
+        val state = viewModel.uiState.value
+        assertTrue(state.isEditing)
+        assertEquals(50L, state.id)
+        assertEquals("Oportunidad Original", state.nombre)
+
+        viewModel.onNombreChanged("Oportunidad Editada")
+        viewModel.onPrioridadSelected("Alta")
+
+        viewModel.saveOportunidad("2025-01-10")
+        kotlinx.coroutines.delay(200)
+
+        assertTrue(viewModel.uiState.value.isSavedSuccess)
+
+        val updated = fakeDao.getOportunidadById(50L)
+        assertNotNull(updated)
+        assertEquals("Oportunidad Editada", updated?.nombre)
+        assertEquals("Alta", updated?.prioridad)
+    }
+
+    @Test
     fun testOportunidadFormViewModelFactory() {
         val factory = OportunidadFormViewModelFactory(repository)
         val created = factory.create(OportunidadFormViewModel::class.java)

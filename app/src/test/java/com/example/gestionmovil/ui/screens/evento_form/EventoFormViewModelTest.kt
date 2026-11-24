@@ -129,6 +129,75 @@ class EventoFormViewModelTest {
     }
 
     @Test
+    fun testCargarEventoParaEditarYActualizar() = runBlocking {
+        val evento = EventoEntity(
+            id = "EVT-10",
+            titulo = "Seminario Original",
+            tipoEvento = "Seminario",
+            fecha = "2025-08-10",
+            hora = "09:00",
+            region = "Metropolitana",
+            comuna = "Santiago",
+            organizacionId = 1L,
+            organizacionNombre = "Org Test",
+            publicoEsperado = 80,
+            condicionesParticipacion = "Ninguna",
+            rutaFotoEvidencia = null
+        )
+        fakeDao.insertarEvento(evento)
+
+        viewModel.cargarEventoParaEditar("EVT-10")
+        kotlinx.coroutines.delay(100)
+
+        val state = viewModel.uiState.value
+        assertTrue(state.isEditing)
+        assertEquals("EVT-10", state.id)
+        assertEquals("Seminario Original", state.titulo)
+
+        viewModel.onTituloChange("Seminario Modificado")
+
+        val mockContext = object : ContextWrapper(null) {
+            override fun getFilesDir(): File = File(System.getProperty("java.io.tmpdir") ?: ".")
+        }
+
+        var updatedEntity: EventoEntity? = null
+        viewModel.guardarEvento(mockContext) { updatedEntity = it }
+        kotlinx.coroutines.delay(200)
+
+        assertNotNull(updatedEntity)
+        assertEquals("Seminario Modificado", updatedEntity?.titulo)
+    }
+
+    @Test
+    fun testEliminarEvento() = runBlocking {
+        val evento = EventoEntity(
+            id = "EVT-99",
+            titulo = "Evento a borrar",
+            tipoEvento = "Taller",
+            fecha = "2025-09-01",
+            hora = "10:00",
+            region = "Valparaíso",
+            comuna = "Valparaíso",
+            organizacionId = 1L,
+            organizacionNombre = "Org Valpo",
+            publicoEsperado = 20,
+            condicionesParticipacion = "",
+            rutaFotoEvidencia = null
+        )
+        fakeDao.insertarEvento(evento)
+        assertEquals(1, fakeDao.eventos.size)
+
+        var eliminado = false
+        viewModel.eliminarEvento("EVT-99") {
+            eliminado = true
+        }
+        kotlinx.coroutines.delay(200)
+
+        assertTrue(eliminado)
+        assertEquals(0, fakeDao.eventos.size)
+    }
+
+    @Test
     fun testEventoFormViewModelFactory() {
         val factory = EventoFormViewModelFactory(repository)
         val created = factory.create(EventoFormViewModel::class.java)

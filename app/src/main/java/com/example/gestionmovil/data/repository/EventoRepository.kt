@@ -86,20 +86,31 @@ class EventoRepository(
     }
 
     /**
-     * Elimina un evento por ID en el Backend (DELETE /api/eventos/{id}).
-     * (Nota: Si tu EventoDao tiene método eliminar/delete, puedes invocarlo aquí tras el éxito).
+     * Obtiene un evento por su ID desde Room.
+     */
+    suspend fun obtenerEventoPorId(id: String): EventoEntity? {
+        return withContext(Dispatchers.IO) {
+            eventoDao.obtenerEventoPorId(id)
+        }
+    }
+
+    /**
+     * Elimina un evento por ID en el Backend (DELETE /api/eventos/{id}) y en la BD local Room.
      */
     suspend fun eliminarEventoRemoto(id: String): Result<Boolean> {
         return withContext(Dispatchers.IO) {
             try {
                 val response = eventoApi.delete(id)
                 if (response.isSuccessful) {
+                    eventoDao.eliminarEventoPorId(id)
                     Result.success(true)
                 } else {
                     Result.failure(Exception("No se pudo eliminar el evento (${response.code()})"))
                 }
             } catch (e: Exception) {
-                Result.failure(e)
+                // Respaldo offline: elimina en Room aunque no haya red
+                eventoDao.eliminarEventoPorId(id)
+                Result.success(true)
             }
         }
     }

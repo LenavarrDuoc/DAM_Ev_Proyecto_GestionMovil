@@ -225,6 +225,9 @@ fun AppNavegacion(
                     navController.navigate(Rutas.Home.ruta) {
                         popUpTo(Rutas.Home.ruta) { inclusive = true }
                     }
+                },
+                onNavigateToEditar = { id ->
+                    navController.navigate(Rutas.EditarOportunidad.crearRuta(id))
                 }
             )
         }
@@ -237,6 +240,36 @@ fun AppNavegacion(
             val formViewModel: OportunidadFormViewModel = viewModel(
                 factory = OportunidadFormViewModelFactory(repository)
             )
+
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                formViewModel.limpiarFormulario()
+            }
+
+            OportunidadFormScreen(
+                viewModel = formViewModel,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // --- EDITAR OPORTUNIDAD ---
+        composable(
+            route = Rutas.EditarOportunidad.ruta,
+            arguments = listOf(navArgument("oportunidadId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val oportunidadId = backStackEntry.arguments?.getLong("oportunidadId") ?: 0L
+
+            val db = AppDatabase.getDatabase(context.applicationContext)
+            val repository = OportunidadRepository(db.oportunidadDao())
+
+            val formViewModel: OportunidadFormViewModel = viewModel(
+                factory = OportunidadFormViewModelFactory(repository)
+            )
+
+            androidx.compose.runtime.LaunchedEffect(oportunidadId) {
+                formViewModel.cargarOportunidadParaEditar(oportunidadId)
+            }
 
             OportunidadFormScreen(
                 viewModel = formViewModel,
@@ -283,9 +316,29 @@ fun AppNavegacion(
         }
 
         composable(Rutas.CrearEvento.ruta) {
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                eventosViewModel.limpiarFormulario()
+            }
             EventoFormScreen(
                 viewModel = eventosViewModel,
                 onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(
+            route = Rutas.EditarEvento.ruta,
+            arguments = listOf(navArgument("eventoId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val eventoId = backStackEntry.arguments?.getString("eventoId") ?: ""
+            androidx.compose.runtime.LaunchedEffect(eventoId) {
+                eventosViewModel.cargarEventoParaEditar(eventoId)
+            }
+            EventoFormScreen(
+                viewModel = eventosViewModel,
+                onNavigateBack = {
+                    eventosViewModel.limpiarFormulario()
                     navController.popBackStack()
                 }
             )
@@ -301,6 +354,9 @@ fun AppNavegacion(
                 viewModel = eventosViewModel,
                 onNavigateBack = {
                     navController.popBackStack()
+                },
+                onNavigateToEditar = { id ->
+                    navController.navigate(Rutas.EditarEvento.crearRuta(id))
                 }
             )
         }

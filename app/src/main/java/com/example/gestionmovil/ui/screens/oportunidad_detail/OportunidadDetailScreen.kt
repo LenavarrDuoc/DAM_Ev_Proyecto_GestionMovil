@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BusinessCenter
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -54,7 +55,8 @@ fun OportunidadDetailScreen(
     usuarioActual: UsuarioEntity?,
     onNavigateBack: () -> Unit,
     onNavigateToSeguimiento: (Long) -> Unit = {},
-    onNavigateToHome: () -> Unit = {}
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToEditar: (Long) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -84,6 +86,13 @@ fun OportunidadDetailScreen(
                     }
                 },
                 actions = {
+                    // BOTÓN EDITAR -> Va al formulario de edición de oportunidad
+                    IconButton(onClick = { onNavigateToEditar(oportunidadId) }) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Editar Oportunidad"
+                        )
+                    }
                     // BOTÓN SEGUIMIENTO -> Va directo a la bitácora de gestiones
                     IconButton(onClick = { onNavigateToSeguimiento(oportunidadId) }) {
                         Icon(

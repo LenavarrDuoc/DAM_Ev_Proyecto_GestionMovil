@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 
 data class EventoFormUiState(
     // Campos del Formulario
+    val id: String? = null,
+    val isEditing: Boolean = false,
     val titulo: String = "",
     val tipoEvento: String = "Conferencia",
     val fecha: String = "2026-10-25",

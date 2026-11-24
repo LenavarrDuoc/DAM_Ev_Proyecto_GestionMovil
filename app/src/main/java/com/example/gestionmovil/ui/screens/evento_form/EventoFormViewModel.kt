@@ -87,13 +87,42 @@ class EventoFormViewModel(
         validarFormulario()
     }
 
+    fun cargarEventoParaEditar(eventoId: String) {
+        viewModelScope.launch {
+            val evento = repository.obtenerEventoPorId(eventoId)
+            if (evento != null) {
+                _uiState.update {
+                    it.copy(
+                        id = evento.id,
+                        titulo = evento.titulo,
+                        tipoEvento = evento.tipoEvento,
+                        fecha = evento.fecha,
+                        hora = evento.hora,
+                        region = evento.region,
+                        comuna = evento.comuna,
+                        organizacionNombre = evento.organizacionNombre,
+                        publicoEsperado = if (evento.publicoEsperado > 0) evento.publicoEsperado.toString() else "",
+                        condicionesParticipacion = evento.condicionesParticipacion,
+                        isEditing = true,
+                        errorMessage = null
+                    )
+                }
+                validarFormulario()
+            }
+        }
+    }
+
+    fun limpiarFormulario() {
+        _uiState.value = EventoFormUiState()
+    }
+
     // ─── VALIDACIONES Y GUARDADO ─────────────────────────────────
 
     private fun validarFormulario() {
         val estado = _uiState.value
         val esValido = estado.titulo.isNotBlank() &&
                 estado.organizacionNombre.isNotBlank() &&
-                estado.fotoEvidencia != null
+                (estado.fotoEvidencia != null || estado.isEditing)
 
         _uiState.update { it.copy(isFormValid = esValido) }
     }
@@ -110,9 +139,9 @@ class EventoFormViewModel(
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
             try {
-                // Guardamos la foto en disco y obtenemos la ruta real del archivo
+                // Guardamos la foto en disco si se capturó una nueva
                 val nombreArchivo = "foto_evento_${System.currentTimeMillis()}.jpg"
-                val rutaAbsoluta = estado.fotoEvidencia?.let { bitmap ->
+                val nuevaRuta = estado.fotoEvidencia?.let { bitmap ->
                     com.example.gestionmovil.utils.ImageUtils.guardarBitmapEnAlmacenamiento(
                         context,
                         bitmap,
@@ -120,24 +149,32 @@ class EventoFormViewModel(
                     )
                 }
 
-                val nuevoEvento = EventoEntity(
+                val eventoExistente = if (estado.isEditing && estado.id != null) {
+                    repository.obtenerEventoPorId(estado.id)
+                } else null
+
+                val eventoParaGuardar = EventoEntity(
+                    id = estado.id ?: java.util.UUID.randomUUID().toString(),
                     titulo = estado.titulo.trim(),
                     tipoEvento = estado.tipoEvento,
                     fecha = estado.fecha.trim(),
                     hora = estado.hora.trim(),
                     region = estado.region.trim(),
                     comuna = estado.comuna.trim(),
-                    organizacionId = 0L, // Tipo Long alineado con Spring Boot (0L cuando es ingreso manual sin FK)
+                    organizacionId = eventoExistente?.organizacionId ?: 0L,
                     organizacionNombre = estado.organizacionNombre.trim(),
                     publicoEsperado = estado.publicoEsperado.toIntOrNull() ?: 0,
                     condicionesParticipacion = estado.condicionesParticipacion.trim(),
-                    rutaFotoEvidencia = rutaAbsoluta
+                    rutaFotoEvidencia = nuevaRuta ?: eventoExistente?.rutaFotoEvidencia
                 )
 
-                val resultado = repository.guardarEvento(nuevoEvento)
+                val resultado = if (estado.isEditing) {
+                    repository.actualizarEvento(eventoParaGuardar)
+                } else {
+                    repository.guardarEvento(eventoParaGuardar)
+                }
 
                 resultado.onSuccess { eventoGuardado ->
-                    // Limpiamos el formulario para futuros registros
                     _uiState.value = EventoFormUiState(isEventoGuardado = true)
                     onSuccess(eventoGuardado)
                 }.onFailure { error ->
@@ -150,6 +187,21 @@ class EventoFormViewModel(
                 }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
+            }
+        }
+    }
+
+    fun eliminarEvento(eventoId: String, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            val res = repository.eliminarEventoRemoto(eventoId)
+            res.onSuccess {
+                _uiState.update { it.copy(isLoading = false) }
+                onSuccess()
+            }.onFailure { err ->
+                _uiState.update {
+                    it.copy(isLoading = false, errorMessage = err.message ?: "Error al eliminar el evento")
+                }
             }
         }
     }

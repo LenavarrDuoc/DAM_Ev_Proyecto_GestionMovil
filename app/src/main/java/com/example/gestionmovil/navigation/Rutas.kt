@@ -31,6 +31,12 @@ sealed class Rutas(val ruta: String) {
     object DetalleEvento : Rutas("detalle_evento/{eventoId}") {
         fun crearRuta(eventoId: String) = "detalle_evento/$eventoId"
     }
+    object EditarEvento : Rutas("editar_evento/{eventoId}") {
+        fun crearRuta(eventoId: String) = "editar_evento/$eventoId"
+    }
+    object EditarOportunidad : Rutas("editar_oportunidad/{oportunidadId}") {
+        fun crearRuta(oportunidadId: Long) = "editar_oportunidad/$oportunidadId"
+    }
     object Alertas : Rutas("alertas")
     object Historial : Rutas("historial")
 }

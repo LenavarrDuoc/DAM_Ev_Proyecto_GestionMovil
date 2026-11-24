@@ -88,7 +88,7 @@ fun EventoFormScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Registrar Nuevo Evento") },
+                title = { Text(if (uiState.isEditing) "Editar Evento" else "Registrar Nuevo Evento") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = AppTheme.colors.topBarBackground,
                     titleContentColor = AppTheme.colors.topBarContent,
@@ -326,7 +326,8 @@ fun EventoFormScreen(
                             titulo = "${evento.titulo} (${evento.tipoEvento})",
                             descripcion = "Organización: ${evento.organizacionNombre}\nUbicación: ${evento.comuna},${evento.region}\nPúblico: ${evento.publicoEsperado}\nCondiciones:${evento.condicionesParticipacion}"
                         )
-                        Toast.makeText(context, "Evento registrado y agendado", Toast.LENGTH_LONG).show()
+                        val msg = if (uiState.isEditing) "Evento actualizado con éxito" else "Evento registrado y agendado"
+                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
                         onNavigateBack()
                     }
                 },
@@ -341,7 +342,7 @@ fun EventoFormScreen(
                 } else {
                     Icon(Icons.Default.Event, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Guardar y Agendar en Calendario Nativo")
+                    Text(if (uiState.isEditing) "Actualizar Evento" else "Guardar y Agendar en Calendario Nativo")
                 }
             }
         }

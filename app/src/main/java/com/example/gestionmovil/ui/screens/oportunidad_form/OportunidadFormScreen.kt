@@ -65,7 +65,7 @@ fun OportunidadFormScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Nueva Oportunidad") },
+                title = { Text(if (uiState.isEditing) "Editar Oportunidad" else "Nueva Oportunidad") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = AppTheme.colors.topBarBackground,
                     titleContentColor = AppTheme.colors.topBarContent,
@@ -180,7 +180,7 @@ fun OportunidadFormScreen(
             ) {
                 Icon(Icons.Default.Save, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Guardar Oportunidad")
+                Text(if (uiState.isEditing) "Actualizar Oportunidad" else "Guardar Oportunidad")
             }
         }
     }

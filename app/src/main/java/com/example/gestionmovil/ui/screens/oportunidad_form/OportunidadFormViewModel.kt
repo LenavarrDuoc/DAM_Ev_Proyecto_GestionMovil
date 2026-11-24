@@ -48,6 +48,35 @@ class OportunidadFormViewModel(
     fun onOrganizacionSelected(id: Long?) { _uiState.update { it.copy(organizacionIdSeleccionada = id) } }
     fun onObservacionChanged(value: String) { _uiState.update { it.copy(observacion = value) } }
 
+    fun cargarOportunidadParaEditar(id: Long) {
+        viewModelScope.launch {
+            val op = repository.getOportunidadById(id)
+            if (op != null) {
+                _uiState.update {
+                    it.copy(
+                        id = op.id,
+                        nombre = op.nombre,
+                        tipoOportunidad = op.tipoOportunidad,
+                        descripcion = op.descripcion,
+                        fuenteInformacion = op.fuenteInformacion,
+                        responsableInterno = op.responsableInterno,
+                        prioridad = op.prioridad,
+                        potencialEstimado = op.potencialEstimado,
+                        estado = op.estado,
+                        organizacionIdSeleccionada = op.organizacionId,
+                        observacion = op.observacion,
+                        isEditing = true
+                    )
+                }
+                validarFormulario()
+            }
+        }
+    }
+
+    fun limpiarFormulario() {
+        _uiState.value = OportunidadFormUiState()
+    }
+
     private fun validarFormulario() {
         val s = _uiState.value
         val isValid = s.nombreError == null && s.nombre.isNotBlank() &&
@@ -63,12 +92,17 @@ class OportunidadFormViewModel(
 
         viewModelScope.launch {
             val s = _uiState.value
+            val opExistente = if (s.isEditing && s.id != 0L) {
+                repository.getOportunidadById(s.id)
+            } else null
+
             val entity = OportunidadEntity(
+                id = s.id,
                 nombre = s.nombre.trim(),
                 tipoOportunidad = s.tipoOportunidad,
                 descripcion = s.descripcion.trim(),
                 fuenteInformacion = s.fuenteInformacion.trim(),
-                fechaDeteccion = currentDate,
+                fechaDeteccion = opExistente?.fechaDeteccion ?: currentDate,
                 responsableInterno = s.responsableInterno.trim(),
                 prioridad = s.prioridad,
                 potencialEstimado = s.potencialEstimado,
@@ -77,7 +111,12 @@ class OportunidadFormViewModel(
                 organizacionId = s.organizacionIdSeleccionada,
                 observacion = s.observacion.trim()
             )
-            repository.crearOportunidad(entity)
+
+            if (s.isEditing) {
+                repository.updateOportunidad(entity)
+            } else {
+                repository.crearOportunidad(entity)
+            }
             _uiState.update { it.copy(isSavedSuccess = true) }
         }
     }
