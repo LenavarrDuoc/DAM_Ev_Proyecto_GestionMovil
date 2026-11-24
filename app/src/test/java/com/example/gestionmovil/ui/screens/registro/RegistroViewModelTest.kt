@@ -1,31 +1,46 @@
-package com.example.gestionmovil.ui.theme.Registro
+package com.example.gestionmovil.ui.screens.registro
 
 import com.example.gestionmovil.data.local.entities.UsuarioEntity
+import com.example.gestionmovil.data.repository.UsuarioRepository
+import com.example.gestionmovil.fakes.FakeUsuarioApiService
 import com.example.gestionmovil.fakes.FakeUsuarioDao
 import com.example.gestionmovil.utils.TestUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 import java.util.Calendar
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RegistroViewModelTest {
 
+    companion object {
+        @BeforeClass
+        @JvmStatic
+        fun setUpClass() {
+            TestUtils.initPatterns()
+        }
+    }
+
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var fakeUsuarioDao: FakeUsuarioDao
+    private lateinit var fakeUsuarioApi: FakeUsuarioApiService
+    private lateinit var usuarioRepository: UsuarioRepository
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        TestUtils.initPatterns()
         fakeUsuarioDao = FakeUsuarioDao()
+        fakeUsuarioApi = FakeUsuarioApiService()
         TestUtils.injectFakeDatabase(fakeUsuarioDao)
+        usuarioRepository = UsuarioRepository(fakeUsuarioDao, fakeUsuarioApi)
     }
 
     @After
@@ -36,7 +51,7 @@ class RegistroViewModelTest {
     @Test
     fun testFormStateChanges() {
         val app = TestUtils.createMockApplication()
-        val viewModel = RegistroViewModel(app)
+        val viewModel = RegistroViewModel(app, usuarioRepository)
 
         val cal = Calendar.getInstance().apply { add(Calendar.YEAR, -25) }
         viewModel.onPrimerNombreChange("Juan")
@@ -69,7 +84,7 @@ class RegistroViewModelTest {
     @Test
     fun testRegistrarUsuarioValidationFail() {
         val app = TestUtils.createMockApplication()
-        val viewModel = RegistroViewModel(app)
+        val viewModel = RegistroViewModel(app, usuarioRepository)
 
         var successCalled = false
         viewModel.registrarUsuario { successCalled = true }
@@ -80,9 +95,10 @@ class RegistroViewModelTest {
     }
 
     @Test
-    fun testRegistrarUsuarioExitoso() {
+    fun testRegistrarUsuarioExitoso() = runBlocking {
+        fakeUsuarioApi.shouldFail = false
         val app = TestUtils.createMockApplication()
-        val viewModel = RegistroViewModel(app)
+        val viewModel = RegistroViewModel(app, usuarioRepository)
 
         val cal = Calendar.getInstance().apply { add(Calendar.YEAR, -25) }
         viewModel.onPrimerNombreChange("Juan")
@@ -97,6 +113,8 @@ class RegistroViewModelTest {
 
         var successCalled = false
         viewModel.registrarUsuario { successCalled = true }
+        kotlinx.coroutines.delay(500)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         assertTrue(successCalled)
         assertEquals(1, fakeUsuarioDao.usuarios.size)
@@ -104,7 +122,7 @@ class RegistroViewModelTest {
     }
 
     @Test
-    fun testRegistrarUsuarioFailure_CorreoExistente() {
+    fun testRegistrarUsuarioFailure_CorreoExistente() = runBlocking {
         fakeUsuarioDao.usuarios.add(
             UsuarioEntity(
                 id = "10", pNombre = "Pedro", email = "existente@example.com", password = "hash", rol = "CLIENTE"
@@ -112,7 +130,7 @@ class RegistroViewModelTest {
         )
 
         val app = TestUtils.createMockApplication()
-        val viewModel = RegistroViewModel(app)
+        val viewModel = RegistroViewModel(app, usuarioRepository)
 
         val cal = Calendar.getInstance().apply { add(Calendar.YEAR, -25) }
         viewModel.onPrimerNombreChange("Juan")
@@ -125,6 +143,7 @@ class RegistroViewModelTest {
 
         var successCalled = false
         viewModel.registrarUsuario { successCalled = true }
+        kotlinx.coroutines.delay(200)
 
         assertFalse(successCalled)
         assertEquals("El correo ya se encuentra registrado", viewModel.uiState.value.errorMessage)

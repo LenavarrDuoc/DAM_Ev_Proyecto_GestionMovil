@@ -86,8 +86,8 @@ class OportunidadRepository(
                 }
             } catch (e: Exception) {
                 // Respaldo offline: si no hay conexión, guarda localmente en Room
-                oportunidadDao.insertOportunidad(oportunidadLocal)
-                Result.success(oportunidadLocal)
+                val id = oportunidadDao.insertOportunidad(oportunidadLocal)
+                Result.success(if (oportunidadLocal.id == 0L) oportunidadLocal.copy(id = id) else oportunidadLocal)
             }
         }
     }

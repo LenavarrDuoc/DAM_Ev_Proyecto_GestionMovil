@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import com.example.gestionmovil.data.local.entities.EventoEntity
 import com.example.gestionmovil.data.repository.EventoRepository
+import com.example.gestionmovil.fakes.FakeEventoApiService
 import com.example.gestionmovil.fakes.FakeEventoDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,7 +41,7 @@ class EventoFormViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         fakeDao = FakeEventoDao()
-        repository = EventoRepository(fakeDao)
+        repository = EventoRepository(fakeDao, FakeEventoApiService())
         viewModel = EventoFormViewModel(repository)
     }
 
@@ -116,6 +117,7 @@ class EventoFormViewModelTest {
 
         var savedEntity: EventoEntity? = null
         viewModel.guardarEvento(mockContext) { savedEntity = it }
+        kotlinx.coroutines.delay(200)
 
         assertNotNull(savedEntity)
         assertEquals("Seminario", savedEntity?.titulo)

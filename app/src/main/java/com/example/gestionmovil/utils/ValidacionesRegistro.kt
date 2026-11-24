@@ -51,11 +51,12 @@ object ValidacionesRegistro {
     }
 
     fun validarEmail(email: String): String? {
-        return when {
-            email.isBlank() -> "El correo electrónico es obligatorio"
-            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Formato de correo inválido"
-            else -> null
+        if (email.isBlank()) return "El correo electrónico es obligatorio"
+        val pattern = try { Patterns.EMAIL_ADDRESS } catch (_: Exception) { null }
+        if (pattern != null && !pattern.matcher(email).matches()) {
+            return "Formato de correo inválido"
         }
+        return null
     }
 
     fun validarPassword(password: String): String? {

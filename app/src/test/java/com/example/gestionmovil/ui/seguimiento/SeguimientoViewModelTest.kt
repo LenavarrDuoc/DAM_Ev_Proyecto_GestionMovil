@@ -3,6 +3,7 @@ package com.example.gestionmovil.ui.seguimiento
 import androidx.lifecycle.ViewModel
 import com.example.gestionmovil.data.local.entities.SeguimientoEntity
 import com.example.gestionmovil.data.repository.SeguimientoRepository
+import com.example.gestionmovil.fakes.FakeSeguimientoApiService
 import com.example.gestionmovil.fakes.FakeSeguimientoDao
 import com.example.gestionmovil.utils.TestUtils
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +29,7 @@ class SeguimientoViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         fakeDao = FakeSeguimientoDao()
-        repository = SeguimientoRepository(fakeDao)
+        repository = SeguimientoRepository(fakeDao, FakeSeguimientoApiService())
         val app = TestUtils.createMockApplication()
         viewModel = SeguimientoViewModel(app, repository)
     }
@@ -73,6 +74,7 @@ class SeguimientoViewModelTest {
         assertEquals("Nota de seguimiento", state.observacion)
 
         viewModel.guardarGestion()
+        kotlinx.coroutines.delay(200)
         assertTrue(viewModel.uiState.value.guardadoExitoso)
         assertEquals(1, fakeDao.seguimientos.size)
     }
@@ -83,6 +85,7 @@ class SeguimientoViewModelTest {
         viewModel.onFechaGestionChanged("") // Prueba el fallback ifBlank
 
         viewModel.guardarGestion()
+        kotlinx.coroutines.delay(200)
         assertTrue(viewModel.uiState.value.guardadoExitoso)
         assertEquals(1, fakeDao.seguimientos.size)
         assertTrue(fakeDao.seguimientos[0].fechaGestion.isNotBlank())
@@ -99,6 +102,7 @@ class SeguimientoViewModelTest {
         viewModel.seleccionarParaEditar(seg)
         viewModel.onPropuestaChanged("Propuesta Modificada")
         viewModel.guardarGestion()
+        kotlinx.coroutines.delay(200)
 
         assertTrue(viewModel.uiState.value.guardadoExitoso)
         val modificado = fakeDao.obtenerSeguimientoPorId(5L)
@@ -138,6 +142,7 @@ class SeguimientoViewModelTest {
         assertEquals("Propuesta B", state.propuesta)
 
         viewModel.eliminarSeguimiento(seg)
+        kotlinx.coroutines.delay(200)
         assertEquals(0, fakeDao.seguimientos.size)
     }
 

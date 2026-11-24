@@ -16,19 +16,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LoginViewModel(application: Application) : AndroidViewModel(application) {
-
-    // 1. Cambiamos el tipo de repositorio a AuthRepository
-    private val authRepository: AuthRepository
-
-    init {
-        // 2. Obtenemos las dependencias locales y remotas
-        val dao = AppDatabase.getDatabase(application).usuarioDao()
-        val authApi = RetrofitClient.authApi // ApiService de Retrofit
-
-        // 3. Inyectamos ambas en el repositorio híbrido
-        authRepository = AuthRepository(authApi, dao)
-    }
+class LoginViewModel @JvmOverloads constructor(
+    application: Application,
+    private val authRepository: AuthRepository = AuthRepository(
+        RetrofitClient.authApi,
+        AppDatabase.getDatabase(application).usuarioDao()
+    )
+) : AndroidViewModel(application) {
 
     // Estado reactivo centralizado con StateFlow
     private val _uiState = MutableStateFlow(LoginUiState())

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.example.gestionmovil.data.local.entities.OportunidadEntity
 import com.example.gestionmovil.data.local.entities.OrganizacionEntity
 import com.example.gestionmovil.data.repository.OportunidadRepository
+import com.example.gestionmovil.fakes.FakeOportunidadApiService
 import com.example.gestionmovil.fakes.FakeOportunidadDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,7 +30,7 @@ class OportunidadListViewModelTest {
     fun setUp() = runBlocking {
         Dispatchers.setMain(testDispatcher)
         fakeDao = FakeOportunidadDao()
-        repository = OportunidadRepository(fakeDao)
+        repository = OportunidadRepository(fakeDao, FakeOportunidadApiService())
 
         fakeDao.organizaciones.add(
             OrganizacionEntity(id = 1L, nombre = "Empresa ACME", tipoOrganizacion = "T", rubro = "R", comuna = "C", region = "R")

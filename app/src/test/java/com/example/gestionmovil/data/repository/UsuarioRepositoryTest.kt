@@ -1,6 +1,7 @@
 package com.example.gestionmovil.data.repository
 
 import com.example.gestionmovil.data.local.entities.UsuarioEntity
+import com.example.gestionmovil.fakes.FakeUsuarioApiService
 import com.example.gestionmovil.fakes.FakeUsuarioDao
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
@@ -15,7 +16,7 @@ class UsuarioRepositoryTest {
     @Before
     fun setUp() {
         fakeDao = FakeUsuarioDao()
-        repository = UsuarioRepository(fakeDao)
+        repository = UsuarioRepository(fakeDao, FakeUsuarioApiService())
     }
 
     @Test
@@ -66,7 +67,7 @@ class UsuarioRepositoryTest {
                 throw RuntimeException("Error en insert BD")
             }
         }
-        val repo = UsuarioRepository(throwingDao)
+        val repo = UsuarioRepository(throwingDao, FakeUsuarioApiService())
         val nuevo = UsuarioEntity(
             id = "2",
             pNombre = "Maria",

@@ -61,10 +61,10 @@ class AuthRepository(
                             // Login offline exitoso
                             Result.success(usuarioLocal)
                         } else {
-                            Result.failure(Exception("Credenciales inválidas (Modo sin conexión)"))
+                            Result.failure(Exception("Contraseña incorrecta"))
                         }
                     } else {
-                        Result.failure(Exception("Sin conexión a internet y el usuario no existe en el equipo."))
+                        Result.failure(Exception("El correo no está registrado"))
                     }
                 } catch (localException: Exception) {
                     Result.failure(Exception("Error crítico de conexión: ${e.localizedMessage}"))

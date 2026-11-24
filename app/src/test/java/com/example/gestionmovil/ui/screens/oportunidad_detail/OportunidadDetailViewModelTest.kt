@@ -3,6 +3,7 @@ package com.example.gestionmovil.ui.screens.oportunidad_detail
 import androidx.lifecycle.ViewModel
 import com.example.gestionmovil.data.local.entities.OportunidadEntity
 import com.example.gestionmovil.data.repository.OportunidadRepository
+import com.example.gestionmovil.fakes.FakeOportunidadApiService
 import com.example.gestionmovil.fakes.FakeOportunidadDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,7 +28,7 @@ class OportunidadDetailViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         fakeDao = FakeOportunidadDao()
-        repository = OportunidadRepository(fakeDao)
+        repository = OportunidadRepository(fakeDao, FakeOportunidadApiService())
         viewModel = OportunidadDetailViewModel(repository)
     }
 
@@ -47,6 +48,7 @@ class OportunidadDetailViewModelTest {
         fakeDao.insertOportunidad(op)
 
         viewModel.loadOportunidad(100L)
+        kotlinx.coroutines.delay(200)
 
         val loaded = viewModel.uiState.value.oportunidad
         assertNotNull(loaded)
@@ -63,8 +65,10 @@ class OportunidadDetailViewModelTest {
         )
         fakeDao.insertOportunidad(op)
         viewModel.loadOportunidad(100L)
+        kotlinx.coroutines.delay(200)
 
         viewModel.updateEstado("Ganada", "2025-01-05")
+        kotlinx.coroutines.delay(200)
 
         val res = fakeDao.getOportunidadById(100L)
         assertEquals("Ganada", res?.estado)
@@ -75,6 +79,7 @@ class OportunidadDetailViewModelTest {
     fun updateEstado_SinOportunidadCargada() = runBlocking {
         // Al no haber cargado la oportunidad, updateEstado no debe hacer nada
         viewModel.updateEstado("Ganada", "2025-01-05")
+        kotlinx.coroutines.delay(200)
         assertFalse(viewModel.uiState.value.isStatusUpdated)
     }
 
@@ -88,8 +93,10 @@ class OportunidadDetailViewModelTest {
         )
         fakeDao.insertOportunidad(op)
         viewModel.loadOportunidad(100L)
+        kotlinx.coroutines.delay(200)
 
         viewModel.reorganizarResponsable(100L, "Maria Supervisora")
+        kotlinx.coroutines.delay(200)
 
         val res = fakeDao.getOportunidadById(100L)
         assertEquals("Maria Supervisora", res?.responsableInterno)
@@ -99,6 +106,7 @@ class OportunidadDetailViewModelTest {
     @Test
     fun reorganizarResponsable_SinOportunidadCargada() = runBlocking {
         viewModel.reorganizarResponsable(100L, "Maria Supervisora")
+        kotlinx.coroutines.delay(200)
         assertFalse(viewModel.uiState.value.isResponsableUpdated)
     }
 

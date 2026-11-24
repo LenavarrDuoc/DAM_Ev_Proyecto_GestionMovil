@@ -2,6 +2,7 @@ package com.example.gestionmovil.ui.screens.contacto_form
 
 import androidx.lifecycle.ViewModel
 import com.example.gestionmovil.data.repository.ContactoRepository
+import com.example.gestionmovil.fakes.FakeContactoApiService
 import com.example.gestionmovil.fakes.FakeContactoDao
 import com.example.gestionmovil.utils.TestUtils
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +29,7 @@ class ContactoFormViewModelTest {
         Dispatchers.setMain(testDispatcher)
         TestUtils.initPatterns()
         fakeDao = FakeContactoDao()
-        repository = ContactoRepository(fakeDao)
+        repository = ContactoRepository(fakeDao, FakeContactoApiService())
         viewModel = ContactoFormViewModel(repository)
     }
 
@@ -85,6 +86,7 @@ class ContactoFormViewModelTest {
         viewModel.onOrganizacionSelected(null) // Prueba fallback 1L
 
         viewModel.saveContacto("2025-01-01")
+        kotlinx.coroutines.delay(200)
 
         assertTrue(viewModel.uiState.value.isSavedSuccess)
         assertEquals(1, fakeDao.contactos.size)

@@ -2,6 +2,7 @@ package com.example.gestionmovil.ui.screens.oportunidad_form
 
 import androidx.lifecycle.ViewModel
 import com.example.gestionmovil.data.repository.OportunidadRepository
+import com.example.gestionmovil.fakes.FakeOportunidadApiService
 import com.example.gestionmovil.fakes.FakeOportunidadDao
 import com.example.gestionmovil.utils.TestUtils
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +29,7 @@ class OportunidadFormViewModelTest {
         Dispatchers.setMain(testDispatcher)
         TestUtils.initPatterns()
         fakeDao = FakeOportunidadDao()
-        repository = OportunidadRepository(fakeDao)
+        repository = OportunidadRepository(fakeDao, FakeOportunidadApiService())
         viewModel = OportunidadFormViewModel(repository)
     }
 
@@ -62,6 +63,7 @@ class OportunidadFormViewModelTest {
         assertTrue(state.isFormValid)
 
         viewModel.saveOportunidad("2025-01-01")
+        kotlinx.coroutines.delay(200)
         assertTrue(viewModel.uiState.value.isSavedSuccess)
         assertEquals(1, fakeDao.oportunidades.size)
         assertEquals("Venta Licencias", fakeDao.oportunidades[0].nombre)

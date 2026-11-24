@@ -1,11 +1,14 @@
 package com.example.gestionmovil.ui.screens.login
 
 import com.example.gestionmovil.data.local.entities.UsuarioEntity
+import com.example.gestionmovil.data.repository.AuthRepository
+import com.example.gestionmovil.fakes.FakeAuthApiService
 import com.example.gestionmovil.fakes.FakeUsuarioDao
 import com.example.gestionmovil.utils.Seguridad
 import com.example.gestionmovil.utils.TestUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -19,6 +22,7 @@ class LoginViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var fakeUsuarioDao: FakeUsuarioDao
+    private lateinit var authRepository: AuthRepository
 
     @Before
     fun setUp() {
@@ -26,6 +30,7 @@ class LoginViewModelTest {
         TestUtils.initPatterns()
         fakeUsuarioDao = FakeUsuarioDao()
         TestUtils.injectFakeDatabase(fakeUsuarioDao)
+        authRepository = AuthRepository(FakeAuthApiService(), fakeUsuarioDao)
     }
 
     @After
@@ -36,7 +41,7 @@ class LoginViewModelTest {
     @Test
     fun testFormStateChanges() {
         val app = TestUtils.createMockApplication()
-        val viewModel = LoginViewModel(app)
+        val viewModel = LoginViewModel(app, authRepository)
 
         viewModel.onEmailChange("test@example.com")
         viewModel.onPasswordChange("Password123!")
@@ -62,7 +67,7 @@ class LoginViewModelTest {
     @Test
     fun testLoginValidationFail() {
         val app = TestUtils.createMockApplication()
-        val viewModel = LoginViewModel(app)
+        val viewModel = LoginViewModel(app, authRepository)
 
         var successCalled = false
         viewModel.onLoginClick { successCalled = true }
@@ -73,7 +78,7 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun testLoginSuccess() {
+    fun testLoginSuccess() = runBlocking {
         val app = TestUtils.createMockApplication()
         val rawPassword = "Password123!"
         val email = "user@test.com"
@@ -86,27 +91,29 @@ class LoginViewModelTest {
         )
         fakeUsuarioDao.usuarios.add(user)
 
-        val viewModel = LoginViewModel(app)
+        val viewModel = LoginViewModel(app, authRepository)
         viewModel.onEmailChange(email)
         viewModel.onPasswordChange(rawPassword)
 
         var loggedUser: UsuarioEntity? = null
         viewModel.onLoginClick { loggedUser = it }
+        kotlinx.coroutines.delay(200)
 
         assertNotNull(loggedUser)
         assertEquals("Pedro", loggedUser?.pNombre)
     }
 
     @Test
-    fun testLoginFailure_CorreoNoRegistrado() {
+    fun testLoginFailure_CorreoNoRegistrado() = runBlocking {
         val app = TestUtils.createMockApplication()
-        val viewModel = LoginViewModel(app)
+        val viewModel = LoginViewModel(app, authRepository)
 
         viewModel.onEmailChange("noexiste@test.com")
         viewModel.onPasswordChange("Password123!")
 
         var successCalled = false
         viewModel.onLoginClick { successCalled = true }
+        kotlinx.coroutines.delay(200)
 
         assertFalse(successCalled)
         val state = viewModel.uiState.value
@@ -116,7 +123,7 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun testLoginFailure_PasswordIncorrecta() {
+    fun testLoginFailure_PasswordIncorrecta() = runBlocking {
         val app = TestUtils.createMockApplication()
         val email = "user@test.com"
         val user = UsuarioEntity(
@@ -128,12 +135,13 @@ class LoginViewModelTest {
         )
         fakeUsuarioDao.usuarios.add(user)
 
-        val viewModel = LoginViewModel(app)
+        val viewModel = LoginViewModel(app, authRepository)
         viewModel.onEmailChange(email)
         viewModel.onPasswordChange("OtraClave123!")
 
         var successCalled = false
         viewModel.onLoginClick { successCalled = true }
+        kotlinx.coroutines.delay(200)
 
         assertFalse(successCalled)
         val state = viewModel.uiState.value

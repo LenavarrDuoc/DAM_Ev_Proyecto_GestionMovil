@@ -2,6 +2,7 @@ package com.example.gestionmovil.data.repository
 
 import com.example.gestionmovil.data.local.entities.OportunidadEntity
 import com.example.gestionmovil.data.local.entities.OrganizacionEntity
+import com.example.gestionmovil.fakes.FakeOportunidadApiService
 import com.example.gestionmovil.fakes.FakeOportunidadDao
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -17,7 +18,7 @@ class OportunidadRepositoryTest {
     @Before
     fun setUp() {
         fakeDao = FakeOportunidadDao()
-        repository = OportunidadRepository(fakeDao)
+        repository = OportunidadRepository(fakeDao, FakeOportunidadApiService())
     }
 
     @Test

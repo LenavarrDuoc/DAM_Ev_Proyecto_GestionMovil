@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -64,7 +63,7 @@ import com.example.gestionmovil.ui.screens.perfil.PerfilFotoScreen
 import com.example.gestionmovil.ui.seguimiento.SeguimientoScreen
 import com.example.gestionmovil.ui.seguimiento.SeguimientoViewModel
 import com.example.gestionmovil.ui.seguimiento.SeguimientoViewModelFactory
-import com.example.gestionmovil.ui.theme.Registro.RegistroScreen
+import com.example.gestionmovil.ui.screens.registro.RegistroScreen
 import kotlinx.coroutines.launch
 
 import androidx.compose.runtime.saveable.Saver

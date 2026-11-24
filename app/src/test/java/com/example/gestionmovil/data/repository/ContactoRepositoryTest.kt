@@ -1,6 +1,7 @@
 package com.example.gestionmovil.data.repository
 
 import com.example.gestionmovil.data.local.entities.ContactoEntity
+import com.example.gestionmovil.fakes.FakeContactoApiService
 import com.example.gestionmovil.fakes.FakeContactoDao
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -16,7 +17,7 @@ class ContactoRepositoryTest {
     @Before
     fun setUp() {
         fakeDao = FakeContactoDao()
-        repository = ContactoRepository(fakeDao)
+        repository = ContactoRepository(fakeDao, FakeContactoApiService())
     }
 
     @Test

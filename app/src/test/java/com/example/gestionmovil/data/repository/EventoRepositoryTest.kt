@@ -1,6 +1,7 @@
 package com.example.gestionmovil.data.repository
 
 import com.example.gestionmovil.data.local.entities.EventoEntity
+import com.example.gestionmovil.fakes.FakeEventoApiService
 import com.example.gestionmovil.fakes.FakeEventoDao
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -16,7 +17,7 @@ class EventoRepositoryTest {
     @Before
     fun setUp() {
         fakeDao = FakeEventoDao()
-        repository = EventoRepository(fakeDao)
+        repository = EventoRepository(fakeDao, FakeEventoApiService())
     }
 
     @Test
