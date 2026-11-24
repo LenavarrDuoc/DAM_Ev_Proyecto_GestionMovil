@@ -67,6 +67,15 @@ import com.example.gestionmovil.ui.seguimiento.SeguimientoViewModelFactory
 import com.example.gestionmovil.ui.theme.Registro.RegistroScreen
 import kotlinx.coroutines.launch
 
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
+import com.google.gson.Gson
+
+private val UsuarioEntitySaver = Saver<UsuarioEntity?, String>(
+    save = { usuario -> usuario?.let { Gson().toJson(it) } ?: "" },
+    restore = { json -> if (json.isBlank()) null else Gson().fromJson(json, UsuarioEntity::class.java) }
+)
+
 @Composable
 fun AppNavegacion(
     navController: NavHostController = rememberNavController()
@@ -74,8 +83,8 @@ fun AppNavegacion(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    // Estado que conserva la sesión del usuario en el grafo de navegación
-    var usuarioActual by remember { mutableStateOf<UsuarioEntity?>(null) }
+    // Estado que conserva la sesión del usuario en el grafo de navegación incluso tras rotación de pantalla
+    var usuarioActual by rememberSaveable(stateSaver = UsuarioEntitySaver) { mutableStateOf<UsuarioEntity?>(null) }
 
     val database = AppDatabase.getDatabase(context.applicationContext)
 

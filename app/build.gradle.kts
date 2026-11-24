@@ -119,3 +119,16 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp.logging.interceptor)
 }
+
+tasks.register<Exec>("adbReverse") {
+    inputs.file(androidComponents.sdkComponents.adb)
+    doFirst {
+        executable = inputs.files.singleFile.absolutePath
+        args("reverse", "tcp:8080", "tcp:8080")
+    }
+    isIgnoreExitValue = true
+}
+
+tasks.matching { it.name == "assembleDebug" || it.name.startsWith("install") }.configureEach {
+    dependsOn("adbReverse")
+}

@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gestionmovil.ui.screens.registro.RegistroUiState
+import com.example.gestionmovil.ui.theme.AppTheme
 import java.util.Calendar
 import java.util.Date
 
@@ -93,8 +94,15 @@ fun RegistroContent(
                     IconButton(onClick = onNavigateToLogin) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Volver al Login")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppTheme.colors.topBarBackground,
+                    titleContentColor = AppTheme.colors.topBarContent,
+                    actionIconContentColor = AppTheme.colors.topBarContent
+                )
+
             )
+
         }
     ) { paddingValues ->
         Surface(
@@ -134,6 +142,16 @@ fun RegistroContent(
                         supportingText = {
                             uiState.errorSegundoNombre?.let { Text(it) }
                         },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                            unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+                            focusedTextColor = AppTheme.colors.textPrimary,
+                            unfocusedTextColor = AppTheme.colors.textSecondary,
+                            focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                            unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+
+                            cursorColor = AppTheme.colors.textFieldCursor
+                        ),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )

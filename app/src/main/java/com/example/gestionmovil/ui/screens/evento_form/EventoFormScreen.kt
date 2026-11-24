@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.example.gestionmovil.ui.theme.AppTheme
 import java.util.Calendar
 
@@ -72,7 +73,7 @@ fun EventoFormScreen(
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
-    var expandedTipo by remember { mutableStateOf(false) }
+    var expandedTipo by rememberSaveable { mutableStateOf(false) }
 
     // Recurso 1: Cámara Nativa
     val cameraLauncher = rememberLauncherForActivityResult(

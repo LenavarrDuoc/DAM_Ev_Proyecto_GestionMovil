@@ -9,11 +9,13 @@ import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.example.gestionmovil.ui.theme.AppTheme
 
 @Composable
 fun CustomOutlinedTextField(
@@ -36,6 +38,16 @@ fun CustomOutlinedTextField(
             isError = isError,
             singleLine = singleLine,
             keyboardOptions = keyboardOptions,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = AppTheme.colors.textFieldBorderFocused,
+                unfocusedBorderColor = AppTheme.colors.textFieldBorderUnfocused,
+                focusedTextColor = AppTheme.colors.textPrimary,
+                unfocusedTextColor = AppTheme.colors.textSecondary,
+                focusedLabelColor = AppTheme.colors.textFieldLabelFocused,
+                unfocusedLabelColor = AppTheme.colors.textFieldLabelUnfocused,
+
+                cursorColor = AppTheme.colors.textFieldCursor
+            ),
             leadingIcon = leadingIcon?.let {
                 { Icon(imageVector = it, contentDescription = null) }
             },
